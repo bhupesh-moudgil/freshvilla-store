@@ -23,9 +23,9 @@ services:
       - key: DB_USER
         value: postgres.inqbadybjwdracaplzwr
       - key: DB_PASSWORD
-        sync: false
+        value: hm9krp5JxrgV7gXt
       - key: JWT_SECRET
-        generateValue: true
+        value: freshvilla-secret-key-2024-change-in-production
       - key: JWT_EXPIRE
         value: 7d
       - key: ADMIN_EMAIL
