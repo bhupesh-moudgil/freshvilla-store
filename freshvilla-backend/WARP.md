@@ -59,6 +59,4 @@ Required variables in `.env`:
 - `PORT`, `NODE_ENV` - Server configuration
 
 ### Default Admin Credentials
-After running `npm run seed`:
-- Email: `admin@freshvilla.com`
-- Password: `Admin@123`
+After running `npm run seed`, default admin credentials will be created using values from `.env` file (`ADMIN_EMAIL` and `ADMIN_PASSWORD` variables).

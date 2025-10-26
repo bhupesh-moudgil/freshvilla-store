@@ -129,10 +129,7 @@ npm run dev
 Server will be running at: `http://localhost:5000`
 
 ### Default Admin Credentials:
-```
-Email: admin@freshvilla.com
-Password: Admin@123
-```
+Credentials are set via environment variables (`ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env` file).
 
 ## 🧪 Testing the Backend
 
@@ -148,7 +145,7 @@ curl http://localhost:5000/api/products
 # Login as admin
 curl -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@freshvilla.com","password":"Admin@123"}'
+  -d '{"email":"your-admin-email","password":"your-admin-password"}'
 
 # Create a product (need token from login)
 curl -X POST http://localhost:5000/api/products \
