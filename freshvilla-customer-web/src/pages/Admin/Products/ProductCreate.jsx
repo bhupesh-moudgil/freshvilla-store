@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { productsAPI } from '../../../services/api';
+import axios from 'axios';
 import Swal from 'sweetalert2';
 
 const ProductCreate = () => {
@@ -21,6 +22,9 @@ const ProductCreate = () => {
     featured: false
   });
   const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (isEditMode) {
@@ -46,6 +50,53 @@ const ProductCreate = () => {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageUpload = async () => {
+    if (!imageFile) {
+      Swal.fire('Error', 'Please select an image first', 'error');
+      return;
+    }
+
+    setUploading(true);
+    const formDataUpload = new FormData();
+    formDataUpload.append('image', imageFile);
+
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/upload/product-image`,
+        formDataUpload,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.data.success) {
+        setFormData(prev => ({ ...prev, image: response.data.data.imageUrl }));
+        Swal.fire('Success!', 'Image uploaded successfully', 'success');
+      }
+    } catch (error) {
+      Swal.fire('Error', error.response?.data?.message || 'Image upload failed', 'error');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -108,9 +159,48 @@ const ProductCreate = () => {
                 <input type="text" className="form-control" name="unit" value={formData.unit} onChange={handleChange} placeholder="e.g., 1kg, 500g" />
               </div>
 
-              <div className="col-md-6 mb-3">
-                <label className="form-label">Image URL</label>
-                <input type="text" className="form-control" name="image" value={formData.image} onChange={handleChange} />
+              <div className="col-md-12 mb-3">
+                <label className="form-label">Product Image</label>
+                <div className="row">
+                  <div className="col-md-6">
+                    <input 
+                      type="file" 
+                      className="form-control mb-2" 
+                      accept="image/jpeg,image/jpg,image/png,image/webp"
+                      onChange={handleImageChange}
+                    />
+                    <button 
+                      type="button" 
+                      className="btn btn-primary btn-sm"
+                      onClick={handleImageUpload}
+                      disabled={!imageFile || uploading}
+                    >
+                      {uploading ? 'Uploading...' : 'Upload Image'}
+                    </button>
+                    <small className="form-text d-block mt-2 text-muted">
+                      <strong>Limits:</strong> Max 500KB, 800x800px<br/>
+                      Auto-resized to 220x220px and optimized<br/>
+                      <strong>Formats:</strong> JPEG, PNG, WebP only
+                    </small>
+                  </div>
+                  <div className="col-md-6">
+                    {(imagePreview || formData.image) && (
+                      <div>
+                        <label className="form-label">Preview:</label>
+                        <img 
+                          src={imagePreview || formData.image} 
+                          alt="Product preview" 
+                          style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'contain' }}
+                          className="d-block border rounded p-2"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <label className="form-label">Or enter Image URL manually:</label>
+                  <input type="text" className="form-control" name="image" value={formData.image} onChange={handleChange} />
+                </div>
               </div>
 
               <div className="col-md-6 mb-3">

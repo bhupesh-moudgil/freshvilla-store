@@ -7,14 +7,18 @@ import productimage3 from '../images/product-img-3.jpg'
 import productimage4 from '../images/product-img-4.jpg'
 import productimage5 from '../images/product-img-5.jpg'
 import { Link } from "react-router-dom";
+import { useCustomerAuth } from '../contexts/CustomerAuthContext';
 
 const Header = () => {
-
-
+  const { customer, isAuthenticated, logout } = useCustomerAuth();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleClick = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleLogout = () => {
+    logout();
   };
 
   return (
@@ -625,39 +629,57 @@ const Header = () => {
             >
               <div>
                 <div>
-                  <Link className="dropdown-item" to="/MyAccountSignIn">
-                    Sign in
-                  </Link>
-                  <Link className="dropdown-item" to="/MyAccountSignUp">
-                    Signup
-                  </Link>
-                  <Link
-                    className="dropdown-item"
-                    to="/MyAccountForgetPassword"
-                  >
-                    Forgot Password
-                  </Link>
-                  <Link className="dropdown-item" to="/MyAccountOrder">
-                    Orders
-                  </Link>
-                  <Link className="dropdown-item" to="/MyAccountSetting">
-                    Settings
-                  </Link>
-                  <Link className="dropdown-item" to="/MyAccountAddress">
-                    Address
-                  </Link>
-                  <Link
-                    className="dropdown-item"
-                    to="/MyAcconutPaymentMethod"
-                  >
-                    Payment Method
-                  </Link>
-                  <Link
-                    className="dropdown-item"
-                    to="/MyAcconutNotification"
-                  >
-                    Notification
-                  </Link>
+                  {!isAuthenticated() ? (
+                    <>
+                      <Link className="dropdown-item" to="/MyAccountSignIn">
+                        Sign in
+                      </Link>
+                      <Link className="dropdown-item" to="/MyAccountSignUp">
+                        Signup
+                      </Link>
+                      <Link
+                        className="dropdown-item"
+                        to="/MyAccountForgetPassword"
+                      >
+                        Forgot Password
+                      </Link>
+                    </>
+                  ) : (
+                    <>
+                      <div className="dropdown-item-text text-muted small">
+                        Welcome, {customer?.name || 'User'}
+                      </div>
+                      <div className="dropdown-divider"></div>
+                      <Link className="dropdown-item" to="/MyAccountOrder">
+                        Orders
+                      </Link>
+                      <Link className="dropdown-item" to="/MyAccountSetting">
+                        Settings
+                      </Link>
+                      <Link className="dropdown-item" to="/MyAccountAddress">
+                        Address
+                      </Link>
+                      <Link
+                        className="dropdown-item"
+                        to="/MyAcconutPaymentMethod"
+                      >
+                        Payment Method
+                      </Link>
+                      <Link
+                        className="dropdown-item"
+                        to="/MyAcconutNotification"
+                      >
+                        Notification
+                      </Link>
+                      <div className="dropdown-divider"></div>
+                      <button
+                        className="dropdown-item text-danger"
+                        onClick={handleLogout}
+                      >
+                        Logout
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

@@ -10,6 +10,7 @@ import Footer from "./Component/Footer";
 import WhatsAppButton from './Component/WhatsAppButton';
 import { CartProvider } from './contexts/CartContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { CustomerAuthProvider } from './contexts/CustomerAuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import CustomerProtectedRoute from './components/CustomerProtectedRoute';
 import AdminLogin from './pages/Admin/AdminLogin';
@@ -51,13 +52,15 @@ import FAQ from "./pages/FooterElements/Faq";
 import Coupons from "./pages/FooterElements/Coupons";
 import Careers from "./pages/FooterElements/Careers";
 import HelpCenter from "./pages/FooterElements/HelpCenter";
-import AdminSettings from "./pages/AdminSettings";
+import AdminSettings from './pages/AdminSettings';
+import NotFound from './pages/NotFound';
 const App = () => {
   return (
     <AuthProvider>
-      <CartProvider>
-        <div>
-          <Router>
+      <CustomerAuthProvider>
+        <CartProvider>
+          <div>
+            <Router>
         <Header/>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -103,12 +106,15 @@ const App = () => {
           <Route path="/admin/coupons/edit/:id" element={<ProtectedRoute><CouponCreate /></ProtectedRoute>} />
           <Route path="/admin/orders" element={<ProtectedRoute><OrdersList /></ProtectedRoute>} />
           <Route path="/admin/settings" element={<AdminSettings />} />
+          {/* Catch-all 404 route - must be last */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <Footer/>
         <WhatsAppButton />
-          </Router>
-        </div>
-      </CartProvider>
+            </Router>
+          </div>
+        </CartProvider>
+      </CustomerAuthProvider>
     </AuthProvider>
   );
 };
