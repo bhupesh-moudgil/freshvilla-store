@@ -15,6 +15,9 @@ import AdminLogin from './pages/Admin/AdminLogin';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import ProductsList from './pages/Admin/Products/ProductsList';
 import ProductCreate from './pages/Admin/Products/ProductCreate';
+import CouponsList from './pages/Admin/Coupons/CouponsList';
+import CouponCreate from './pages/Admin/Coupons/CouponCreate';
+import OrdersList from './pages/Admin/Orders/OrdersList';
 // pages
 import Home from "./pages/Home";
 // About pages
@@ -92,6 +95,10 @@ const App = () => {
           <Route path="/admin/products" element={<ProtectedRoute><ProductsList /></ProtectedRoute>} />
           <Route path="/admin/products/create" element={<ProtectedRoute><ProductCreate /></ProtectedRoute>} />
           <Route path="/admin/products/edit/:id" element={<ProtectedRoute><ProductCreate /></ProtectedRoute>} />
+          <Route path="/admin/coupons" element={<ProtectedRoute><CouponsList /></ProtectedRoute>} />
+          <Route path="/admin/coupons/create" element={<ProtectedRoute><CouponCreate /></ProtectedRoute>} />
+          <Route path="/admin/coupons/edit/:id" element={<ProtectedRoute><CouponCreate /></ProtectedRoute>} />
+          <Route path="/admin/orders" element={<ProtectedRoute><OrdersList /></ProtectedRoute>} />
           <Route path="/admin/settings" element={<AdminSettings />} />
         </Routes>
         <Footer/>
