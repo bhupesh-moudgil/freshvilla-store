@@ -51,7 +51,7 @@ const ProductsList = () => {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Products</h2>
-        <Link to="/admin/dashboard/products/create" className="btn btn-success">
+        <Link to="/admin/products/create" className="btn btn-success">
           <i className="bi bi-plus-circle me-2"></i>Add Product
         </Link>
       </div>
@@ -86,7 +86,7 @@ const ProductsList = () => {
                       {product.inStock ? <span className="badge bg-success">In Stock</span> : <span className="badge bg-danger">Out of Stock</span>}
                     </td>
                     <td>
-                      <Link to={`/admin/dashboard/products/edit/${product.id}`} className="btn btn-sm btn-primary me-2">
+                      <Link to={`/admin/products/edit/${product.id}`} className="btn btn-sm btn-primary me-2">
                         <i className="bi bi-pencil"></i>
                       </Link>
                       <button onClick={() => handleDelete(product.id)} className="btn btn-sm btn-danger">

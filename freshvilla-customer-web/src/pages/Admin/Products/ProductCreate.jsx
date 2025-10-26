@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { productsAPI } from '../../../services/api';
 import Swal from 'sweetalert2';
 
 const ProductCreate = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
+  const isEditMode = !!id;
+  
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -18,6 +21,22 @@ const ProductCreate = () => {
     featured: false
   });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isEditMode) {
+      loadProduct();
+    }
+  }, [id]);
+
+  const loadProduct = async () => {
+    try {
+      const response = await productsAPI.getById(id);
+      setFormData(response.data.data);
+    } catch (error) {
+      Swal.fire('Error', 'Failed to load product', 'error');
+      navigate('/admin/products');
+    }
+  };
 
   const categories = ['Groceries', 'Fruits & Vegetables', 'Dairy & Eggs', 'Snacks & Beverages', 'Bakery', 'Personal Care', 'Household', 'Others'];
 
@@ -34,11 +53,16 @@ const ProductCreate = () => {
     setLoading(true);
 
     try {
-      await productsAPI.create(formData);
-      Swal.fire('Success!', 'Product created successfully', 'success');
-      navigate('/admin/dashboard/products');
+      if (isEditMode) {
+        await productsAPI.update(id, formData);
+        Swal.fire('Success!', 'Product updated successfully', 'success');
+      } else {
+        await productsAPI.create(formData);
+        Swal.fire('Success!', 'Product created successfully', 'success');
+      }
+      navigate('/admin/products');
     } catch (error) {
-      Swal.fire('Error', error.response?.data?.message || 'Failed to create product', 'error');
+      Swal.fire('Error', error.response?.data?.message || `Failed to ${isEditMode ? 'update' : 'create'} product`, 'error');
     } finally {
       setLoading(false);
     }
@@ -46,7 +70,7 @@ const ProductCreate = () => {
 
   return (
     <div>
-      <h2 className="mb-4">Add New Product</h2>
+      <h2 className="mb-4">{isEditMode ? 'Edit Product' : 'Add New Product'}</h2>
 
       <div className="card">
         <div className="card-body">
@@ -111,9 +135,9 @@ const ProductCreate = () => {
 
             <div className="d-flex gap-2">
               <button type="submit" className="btn btn-success" disabled={loading}>
-                {loading ? 'Creating...' : 'Create Product'}
+                {loading ? (isEditMode ? 'Updating...' : 'Creating...') : (isEditMode ? 'Update Product' : 'Create Product')}
               </button>
-              <button type="button" className="btn btn-secondary" onClick={() => navigate('/admin/dashboard/products')}>Cancel</button>
+              <button type="button" className="btn btn-secondary" onClick={() => navigate('/admin/products')}>Cancel</button>
             </div>
           </form>
         </div>
