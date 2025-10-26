@@ -4,8 +4,9 @@ services:
     env: node
     region: singapore
     plan: free
-    buildCommand: cd freshvilla-backend && npm install
-    startCommand: cd freshvilla-backend && npm start
+    rootDir: freshvilla-backend
+    buildCommand: npm install
+    startCommand: npm start
     envVars:
       - key: NODE_ENV
         value: production
