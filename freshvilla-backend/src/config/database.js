@@ -66,6 +66,9 @@ const connectDB = async () => {
     console.log(`\n🔌 Connecting to ${currentConfig.name}...`);
     console.log(`📍 Environment: ${ENV}`);
     console.log(`🌐 Host: ${currentConfig.host}:${currentConfig.port}`);
+    console.log(`🔐 User: ${currentConfig.username}`);
+    console.log(`📦 Database: ${currentConfig.database}`);
+    console.log(`🔑 Password set: ${currentConfig.password ? 'Yes' : 'No'}`);
     
     await sequelize.authenticate();
     console.log(`✅ ${currentConfig.name} Connected Successfully\n`);
@@ -76,7 +79,9 @@ const connectDB = async () => {
     
   } catch (error) {
     console.error(`\n❌ Error connecting to ${currentConfig.name}:`);
-    console.error(`   ${error.message}\n`);
+    console.error(`   Message: ${error.message}`);
+    console.error(`   Name: ${error.name}`);
+    console.error(`   Stack: ${error.stack}\n`);
     process.exit(1);
   }
 };
