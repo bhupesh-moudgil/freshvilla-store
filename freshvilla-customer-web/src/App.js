@@ -52,7 +52,7 @@ const App = () => {
     <AuthProvider>
       <CartProvider>
         <div>
-          <Router basename="/freshvilla-store">
+          <Router>
         <Header/>
         <Routes>
           <Route path="/" element={<Home />} />

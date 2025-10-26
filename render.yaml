@@ -33,4 +33,4 @@ services:
       - key: ADMIN_PASSWORD
         value: Admin@123
       - key: FRONTEND_URL
-        value: https://bhupesh-moudgil.github.io/freshvilla-store
+        value: http://freshvilla.in
