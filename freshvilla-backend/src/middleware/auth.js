@@ -23,7 +23,7 @@ exports.protect = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       
       // Get admin from database
-      req.admin = await Admin.findById(decoded.id).select('-password');
+      req.admin = await Admin.findByPk(decoded.id);
       
       if (!req.admin || !req.admin.isActive) {
         return res.status(401).json({
