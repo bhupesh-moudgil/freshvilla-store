@@ -80,7 +80,7 @@ const AboutUs = () => {
 
                       {/* Text */}
                       <Slide direction="down">
-                      <h1 className="pb-2 pb-md-3">About Fresh Cart</h1>
+                      <h1 className="pb-2 pb-md-3">About FreshVilla</h1>
                       <h3 className="pb-2 pb-md-3">The Future of Grocery Delivery:</h3>
                       <p
                         className="fs-xl pb-4 mb-1 mb-md-2 mb-lg-3"
@@ -281,7 +281,7 @@ const AboutUs = () => {
                     >
                       <img src={member8} alt="Gallery thumbnail" />
                       <div className="gallery-item-caption p-4">
-                        <h4 className="text-light mb-1">Fresh Cart Inc.</h4>
+                        <h4 className="text-light mb-1">FreshVilla Inc.</h4>
                         <p className="mb-0">Showreel by Marvin McKinney</p>
                       </div>
                     </a>
