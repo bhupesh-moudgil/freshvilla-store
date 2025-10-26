@@ -23,6 +23,7 @@ app.use('/api/auth', require('./src/routes/auth'));
 app.use('/api/products', require('./src/routes/products'));
 app.use('/api/coupons', require('./src/routes/coupons'));
 app.use('/api/orders', require('./src/routes/orders'));
+app.use('/api/seed', require('./src/routes/seed'));
 
 // Health check
 app.get('/api/health', (req, res) => {
