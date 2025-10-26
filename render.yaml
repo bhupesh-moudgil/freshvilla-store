@@ -33,4 +33,13 @@ services:
       - key: ADMIN_PASSWORD
         value: Admin@123
       - key: FRONTEND_URL
-        value: http://freshvilla.in
+        value: https://freshvilla.in
+      - key: SMTP_HOST
+        value: smtp.mailgun.org
+      - key: SMTP_PORT
+        value: 587
+      - key: SMTP_USER
+        value: info@freshvilla.in
+      - key: SMTP_FROM
+        value: info@freshvilla.in
+      # SMTP_PASSWORD should be added manually in Render dashboard as a secret

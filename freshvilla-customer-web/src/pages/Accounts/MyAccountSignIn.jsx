@@ -1,10 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import signinimage from '../../images/signin-g.svg'
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ScrollToTop from "../ScrollToTop";
+import { useCustomerAuth } from '../../contexts/CustomerAuthContext';
+import Swal from 'sweetalert2';
 // import Grocerylogo from '../../images/Grocerylogo.png'
 
 const MyAccountSignIn = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { login } = useCustomerAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await login(email, password);
+      Swal.fire('Success!', 'Logged in successfully', 'success');
+      navigate('/MyAccountOrder');
+    } catch (error) {
+      Swal.fire('Error', error.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <>
@@ -51,7 +73,7 @@ const MyAccountSignIn = () => {
                       started.
                     </p>
                   </div>
-                  <form>
+                  <form onSubmit={handleSubmit}>
                     <div className="row g-3">
                       {/* row */}
                       <div className="col-12">
@@ -61,6 +83,8 @@ const MyAccountSignIn = () => {
                           className="form-control"
                           id="inputEmail4"
                           placeholder="Email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
                           required
                         />
                       </div>
@@ -71,6 +95,8 @@ const MyAccountSignIn = () => {
                           className="form-control"
                           id="inputPassword4"
                           placeholder="Password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
                           required
                         />
                       </div>
@@ -100,8 +126,8 @@ const MyAccountSignIn = () => {
                       {/* btn */}
                       <div className="col-12 d-grid">
                         {" "}
-                        <button type="submit" className="btn btn-primary">
-                          Sign In
+                        <button type="submit" className="btn btn-primary" disabled={loading}>
+                          {loading ? 'Signing in...' : 'Sign In'}
                         </button>
                       </div>
                       {/* link */}

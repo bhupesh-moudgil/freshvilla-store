@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const Customer = require('../models/Customer');
+const { sendWelcomeEmail } = require('../utils/emailService');
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -35,6 +36,11 @@ router.post('/register', async (req, res) => {
     });
 
     const token = generateToken(customer.id);
+
+    // Send welcome email (non-blocking)
+    sendWelcomeEmail(customer.email, customer.name).catch(err => {
+      console.error('Failed to send welcome email:', err);
+    });
 
     res.status(201).json({
       success: true,
