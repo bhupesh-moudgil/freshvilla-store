@@ -59,26 +59,15 @@ const AdminDashboard = () => {
               View Store
             </Link>
             
-            <div className="dropdown">
-              <button
-                className="btn btn-light dropdown-toggle"
-                type="button"
-                data-bs-toggle="dropdown"
-              >
-                <i className="bi bi-person-circle me-2"></i>
-                {admin?.name || 'Admin'}
-              </button>
-              <ul className="dropdown-menu dropdown-menu-end">
-                <li><span className="dropdown-item-text small text-muted">{admin?.email}</span></li>
-                <li><hr className="dropdown-divider" /></li>
-                <li>
-                  <button className="dropdown-item text-danger" onClick={handleLogout}>
-                    <i className="bi bi-box-arrow-right me-2"></i>
-                    Logout
-                  </button>
-                </li>
-              </ul>
-            </div>
+            <span className="text-white me-3">
+              <i className="bi bi-person-circle me-2"></i>
+              {admin?.name || 'Admin'}
+            </span>
+            
+            <button className="btn btn-outline-light" onClick={handleLogout}>
+              <i className="bi bi-box-arrow-right me-2"></i>
+              Logout
+            </button>
           </div>
         </div>
       </nav>
