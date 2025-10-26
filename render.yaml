@@ -31,6 +31,6 @@ services:
       - key: ADMIN_EMAIL
         value: admin@freshvilla.com
       - key: ADMIN_PASSWORD
-        sync: false
+        value: Admin@123
       - key: FRONTEND_URL
         value: https://bhupesh-moudgil.github.io
