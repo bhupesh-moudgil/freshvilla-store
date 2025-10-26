@@ -55,34 +55,54 @@ const sequelize = new Sequelize(
     pool: {
       max: 5,
       min: 0,
-      acquire: 30000,
+      acquire: 60000, // Increased to 60s for Render cold starts
       idle: 10000
+    },
+    retry: {
+      max: 3,
+      backoffBase: 1000,
+      backoffExponent: 1.5
     }
   }
 );
 
 const connectDB = async () => {
-  try {
-    console.log(`\n🔌 Connecting to ${currentConfig.name}...`);
-    console.log(`📍 Environment: ${ENV}`);
-    console.log(`🌐 Host: ${currentConfig.host}:${currentConfig.port}`);
-    console.log(`🔐 User: ${currentConfig.username}`);
-    console.log(`📦 Database: ${currentConfig.database}`);
-    console.log(`🔑 Password set: ${currentConfig.password ? 'Yes' : 'No'}`);
-    
-    await sequelize.authenticate();
-    console.log(`✅ ${currentConfig.name} Connected Successfully\n`);
-    
-    // Sync models (creates tables if they don't exist)
-    await sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
-    console.log('📊 Database synced\n');
-    
-  } catch (error) {
-    console.error(`\n❌ Error connecting to ${currentConfig.name}:`);
-    console.error(`   Message: ${error.message}`);
-    console.error(`   Name: ${error.name}`);
-    console.error(`   Stack: ${error.stack}\n`);
-    process.exit(1);
+  let retries = 3;
+  
+  while (retries > 0) {
+    try {
+      console.log(`\n🔌 Connecting to ${currentConfig.name}...`);
+      console.log(`📍 Environment: ${ENV}`);
+      console.log(`🌐 Host: ${currentConfig.host}:${currentConfig.port}`);
+      console.log(`🔐 User: ${currentConfig.username}`);
+      console.log(`📦 Database: ${currentConfig.database}`);
+      console.log(`🔑 Password set: ${currentConfig.password ? 'Yes' : 'No'}`);
+      console.log(`🔄 Retries remaining: ${retries}`);
+      
+      await sequelize.authenticate();
+      console.log(`✅ ${currentConfig.name} Connected Successfully\n`);
+      
+      // Sync models (creates tables if they don't exist)
+      await sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
+      console.log('📊 Database synced\n');
+      
+      return; // Success - exit function
+      
+    } catch (error) {
+      retries--;
+      console.error(`\n❌ Error connecting to ${currentConfig.name}:`);
+      console.error(`   Message: ${error.message}`);
+      console.error(`   Name: ${error.name}`);
+      
+      if (retries > 0) {
+        console.log(`   ⏳ Retrying in 5 seconds... (${retries} attempts left)\n`);
+        await new Promise(resolve => setTimeout(resolve, 5000));
+      } else {
+        console.error(`   Stack: ${error.stack}\n`);
+        console.error('❌ All connection attempts failed. Exiting...\n');
+        process.exit(1);
+      }
+    }
   }
 };
 

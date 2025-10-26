@@ -25,22 +25,36 @@ app.use(helmet({
 // CORS Configuration
 const allowedOrigins = [
   'http://localhost:3000',
+  'http://localhost:3001',
   'http://freshvilla.in',
   'https://freshvilla.in',
   'http://www.freshvilla.in',
   'https://www.freshvilla.in',
-  'https://bhupesh-moudgil.github.io'
+  'https://bhupesh-moudgil.github.io',
+  'https://freshvilla-backend.onrender.com', // Add your actual Render URL here
+  /\.onrender\.com$/ // Allow all Render subdomains
 ];
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Only allow requests from allowed origins or during development
-    if (!origin && process.env.NODE_ENV === 'development') {
+    // Allow no origin (e.g., mobile apps, curl, Postman)
+    if (!origin) {
       return callback(null, true);
     }
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    
+    // Check if origin is in allowed list
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (typeof allowed === 'string') {
+        return allowed === origin;
+      }
+      // If it's a regex pattern
+      return allowed.test(origin);
+    });
+    
+    if (isAllowed) {
       callback(null, true);
     } else {
+      console.warn(`⚠️  CORS blocked: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
