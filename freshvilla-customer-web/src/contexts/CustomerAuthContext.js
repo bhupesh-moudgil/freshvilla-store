@@ -35,6 +35,17 @@ export const CustomerAuthProvider = ({ children }) => {
       const response = await customerAuthAPI.login({ email, password });
       
       if (response.data.success) {
+        // Check if OTP is required
+        if (response.data.requiresOTP) {
+          return {
+            success: true,
+            requiresOTP: true,
+            customerId: response.data.data.customerId,
+            email: response.data.data.email
+          };
+        }
+        
+        // Normal login flow
         const { token, customer: customerData } = response.data.data;
         
         localStorage.setItem('customer_token', token);
@@ -45,6 +56,26 @@ export const CustomerAuthProvider = ({ children }) => {
       }
     } catch (err) {
       throw new Error(err.response?.data?.message || 'Login failed');
+    }
+  };
+
+  const verifyOTP = async (customerId, otp, purpose) => {
+    try {
+      const response = await customerAuthAPI.verifyOTP({ customerId, otp, purpose });
+      
+      if (response.data.success && purpose === 'login') {
+        const { token, customer: customerData } = response.data.data;
+        
+        localStorage.setItem('customer_token', token);
+        localStorage.setItem('customer_user', JSON.stringify(customerData));
+        setCustomer(customerData);
+        
+        return { success: true, customer: customerData };
+      }
+      
+      return response.data;
+    } catch (err) {
+      throw new Error(err.response?.data?.message || 'OTP verification failed');
     }
   };
 
@@ -82,7 +113,8 @@ export const CustomerAuthProvider = ({ children }) => {
     register,
     logout,
     loading,
-    isAuthenticated
+    isAuthenticated,
+    verifyOTP
   };
 
   return (

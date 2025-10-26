@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const Customer = require('../models/Customer');
-const { sendVerificationEmail } = require('../utils/emailService');
+const { sendVerificationEmail, generateOTP, sendSuspiciousLoginOTP } = require('../utils/emailService');
 const { validate, validations } = require('../middleware/validation');
 const rateLimit = require('express-rate-limit');
 
@@ -118,6 +118,7 @@ router.post('/login', authLimiter, validations.customerLogin, validate, async (r
     if (!isPasswordValid) {
       // Increment failed attempts
       customer.failedLoginAttempts += 1;
+      customer.suspiciousLoginAttempts += 1;
       
       // Lock account after 5 failed attempts for 15 minutes
       if (customer.failedLoginAttempts >= 5) {
@@ -136,8 +137,37 @@ router.post('/login', authLimiter, validations.customerLogin, validate, async (r
       });
     }
 
+    // Check for suspicious login pattern: 3 failed attempts followed by successful login
+    const requiresOTP = customer.suspiciousLoginAttempts >= 3;
+    
+    if (requiresOTP) {
+      // Generate and send OTP
+      const otp = generateOTP();
+      const crypto = require('crypto');
+      customer.emailOtp = crypto.createHash('sha256').update(otp).digest('hex');
+      customer.emailOtpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+      customer.emailOtpVerified = false;
+      await customer.save();
+      
+      // Send OTP email (non-blocking)
+      sendSuspiciousLoginOTP(customer.email, customer.name, otp).catch(err => {
+        console.error('Failed to send suspicious login OTP:', err);
+      });
+      
+      return res.status(200).json({
+        success: true,
+        requiresOTP: true,
+        message: 'Suspicious login detected. Please verify with OTP sent to your email.',
+        data: {
+          customerId: customer.id,
+          email: customer.email
+        }
+      });
+    }
+
     // Reset failed attempts on successful login
     customer.failedLoginAttempts = 0;
+    customer.suspiciousLoginAttempts = 0;
     customer.accountLockedUntil = null;
     customer.lastLogin = new Date();
     await customer.save();
@@ -247,6 +277,162 @@ router.post('/verify-email', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Verification failed. Please try again.'
+    });
+  }
+});
+
+// @route   POST /api/customer/auth/verify-otp
+// @desc    Verify email OTP (for suspicious login or checkout)
+// @access  Public
+router.post('/verify-otp', async (req, res) => {
+  try {
+    const { customerId, otp, purpose } = req.body; // purpose: 'login' or 'checkout'
+
+    if (!customerId || !otp) {
+      return res.status(400).json({
+        success: false,
+        message: 'Customer ID and OTP are required'
+      });
+    }
+
+    const customer = await Customer.scope('withPassword').findByPk(customerId);
+
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        message: 'Customer not found'
+      });
+    }
+
+    // Check if OTP exists and not expired
+    if (!customer.emailOtp || !customer.emailOtpExpires) {
+      return res.status(400).json({
+        success: false,
+        message: 'No OTP found. Please request a new one.'
+      });
+    }
+
+    if (customer.emailOtpExpires < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: 'OTP has expired. Please request a new one.'
+      });
+    }
+
+    // Verify OTP
+    const crypto = require('crypto');
+    const otpHash = crypto.createHash('sha256').update(otp).digest('hex');
+
+    if (customer.emailOtp !== otpHash) {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid OTP'
+      });
+    }
+
+    // Mark OTP as verified
+    customer.emailOtpVerified = true;
+    customer.emailOtp = null;
+    customer.emailOtpExpires = null;
+
+    // For login purpose, also reset suspicious attempts and generate token
+    if (purpose === 'login') {
+      customer.failedLoginAttempts = 0;
+      customer.suspiciousLoginAttempts = 0;
+      customer.accountLockedUntil = null;
+      customer.lastLogin = new Date();
+      await customer.save();
+
+      const token = generateToken(customer.id);
+
+      return res.json({
+        success: true,
+        message: 'OTP verified successfully. Login complete.',
+        data: {
+          customer: {
+            id: customer.id,
+            name: customer.name,
+            email: customer.email,
+            mobile: customer.mobile
+          },
+          token
+        }
+      });
+    }
+
+    // For checkout purpose, just mark as verified
+    await customer.save();
+
+    res.json({
+      success: true,
+      message: 'OTP verified successfully',
+      data: {
+        customerId: customer.id,
+        verified: true
+      }
+    });
+  } catch (error) {
+    console.error('OTP verification error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Verification failed. Please try again.'
+    });
+  }
+});
+
+// @route   POST /api/customer/auth/resend-otp
+// @desc    Resend OTP email
+// @access  Public
+router.post('/resend-otp', async (req, res) => {
+  try {
+    const { customerId, purpose } = req.body; // purpose: 'login' or 'checkout'
+
+    if (!customerId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Customer ID is required'
+      });
+    }
+
+    const customer = await Customer.findByPk(customerId);
+
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        message: 'Customer not found'
+      });
+    }
+
+    // Generate new OTP
+    const otp = generateOTP();
+    const crypto = require('crypto');
+    customer.emailOtp = crypto.createHash('sha256').update(otp).digest('hex');
+    customer.emailOtpExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    customer.emailOtpVerified = false;
+    await customer.save();
+
+    // Send appropriate email based on purpose
+    if (purpose === 'login') {
+      sendSuspiciousLoginOTP(customer.email, customer.name, otp).catch(err => {
+        console.error('Failed to resend login OTP:', err);
+      });
+    } else if (purpose === 'checkout') {
+      const { sendCheckoutOTP } = require('../utils/emailService');
+      // For resend, we don't have order total, use generic message
+      sendCheckoutOTP(customer.email, customer.name, otp, 'N/A').catch(err => {
+        console.error('Failed to resend checkout OTP:', err);
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'OTP has been resent to your email'
+    });
+  } catch (error) {
+    console.error('Resend OTP error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to resend OTP. Please try again.'
     });
   }
 });

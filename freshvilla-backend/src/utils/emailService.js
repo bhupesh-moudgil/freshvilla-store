@@ -168,10 +168,74 @@ const sendVerificationEmail = async (userEmail, userName, verificationToken) => 
   return sendEmail({ to: userEmail, subject, html, text });
 };
 
+// Generate 6-digit OTP
+const generateOTP = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+// Send OTP email for suspicious login
+const sendSuspiciousLoginOTP = async (userEmail, userName, otp) => {
+  const subject = 'Security Alert: Login Verification Required - FreshVilla';
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #ff6b00;">⚠️ Security Verification Required</h2>
+      <p>Hi ${userName},</p>
+      <p>We detected multiple failed login attempts followed by a successful login to your account.</p>
+      <p>For your security, please verify this login with the OTP code below:</p>
+      <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 30px 0; text-align: center;">
+        <h1 style="color: #0aad0a; font-size: 36px; letter-spacing: 8px; margin: 0;">${otp}</h1>
+      </div>
+      <p><strong>This OTP will expire in 10 minutes.</strong></p>
+      <p>If this wasn't you, please change your password immediately and contact our support team.</p>
+      <br>
+      <p>Best regards,<br>The FreshVilla Team</p>
+      <hr style="border: none; border-top: 1px solid #eee;">
+      <p style="font-size: 12px; color: #999;">
+        Never share your OTP with anyone. FreshVilla will never ask for your OTP via phone or email.
+      </p>
+    </div>
+  `;
+  const text = `Security Alert: Your FreshVilla login OTP is: ${otp}. Valid for 10 minutes. If this wasn't you, change your password immediately.`;
+
+  return sendEmail({ to: userEmail, subject, html, text });
+};
+
+// Send OTP email for checkout verification
+const sendCheckoutOTP = async (userEmail, userName, otp, orderTotal) => {
+  const subject = 'Order Verification Code - FreshVilla';
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #0aad0a;">🛒 Complete Your Order</h2>
+      <p>Hi ${userName},</p>
+      <p>You're almost done! Please verify your order with the OTP code below:</p>
+      <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 30px 0; text-align: center;">
+        <h1 style="color: #0aad0a; font-size: 36px; letter-spacing: 8px; margin: 0;">${otp}</h1>
+      </div>
+      <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; margin: 20px 0;">
+        <p><strong>Order Amount:</strong> ₹${orderTotal}</p>
+      </div>
+      <p><strong>This OTP will expire in 10 minutes.</strong></p>
+      <p>Enter this code on the checkout page to complete your order.</p>
+      <br>
+      <p>Best regards,<br>The FreshVilla Team</p>
+      <hr style="border: none; border-top: 1px solid #eee;">
+      <p style="font-size: 12px; color: #999;">
+        This OTP is for your order verification. Never share it with anyone.
+      </p>
+    </div>
+  `;
+  const text = `Your FreshVilla checkout OTP is: ${otp}. Order amount: ₹${orderTotal}. Valid for 10 minutes.`;
+
+  return sendEmail({ to: userEmail, subject, html, text });
+};
+
 module.exports = {
   sendEmail,
   sendWelcomeEmail,
   sendPasswordResetEmail,
   sendSignInNotificationEmail,
-  sendVerificationEmail
+  sendVerificationEmail,
+  generateOTP,
+  sendSuspiciousLoginOTP,
+  sendCheckoutOTP
 };

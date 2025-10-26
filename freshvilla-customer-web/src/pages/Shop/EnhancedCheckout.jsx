@@ -2,11 +2,18 @@ import React, { useState } from 'react';
 import { sendOrderToWhatsApp } from '../../utils/whatsapp';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../../contexts/CartContext';
+import { useCustomerAuth } from '../../contexts/CustomerAuthContext';
+import { ordersAPI, customerAuthAPI } from '../../services/api';
+import OTPModal from '../../components/OTPModal';
 import Swal from 'sweetalert2';
 
 const EnhancedCheckout = () => {
   const { cartItems, getCartTotal, clearCart } = useCart();
+  const { customer } = useCustomerAuth();
   const navigate = useNavigate();
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [otpData, setOtpData] = useState({ customerId: '', email: '' });
+  const [otpVerified, setOtpVerified] = useState(false);
   
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
@@ -71,13 +78,64 @@ const EnhancedCheckout = () => {
     return true;
   };
 
-  const handleSubmitOrder = (e) => {
+  const handleSubmitOrder = async (e) => {
     e.preventDefault();
     
     if (!validateForm()) {
       return;
     }
 
+    // Check if customer is logged in and OTP not verified yet
+    if (customer && !otpVerified) {
+      // Request OTP for checkout
+      try {
+        const response = await ordersAPI.requestOTP({
+          customerId: customer.id,
+          orderTotal: getCartTotal()
+        });
+
+        if (response.data.success) {
+          setOtpData({
+            customerId: response.data.data.customerId,
+            email: response.data.data.email
+          });
+          setShowOTPModal(true);
+          Swal.fire({
+            icon: 'info',
+            title: 'Verify Your Order',
+            text: 'Please check your email for the verification code.',
+            confirmButtonColor: '#0aad0a'
+          });
+        }
+      } catch (error) {
+        Swal.fire('Error', error.response?.data?.message || 'Failed to send OTP', 'error');
+      }
+      return;
+    }
+
+    // OTP verified or guest checkout - proceed with order
+    await processOrder();
+  };
+
+  const handleOTPVerify = async (otp) => {
+    try {
+      await customerAuthAPI.verifyOTP({
+        customerId: otpData.customerId,
+        otp,
+        purpose: 'checkout'
+      });
+      setShowOTPModal(false);
+      setOtpVerified(true);
+      Swal.fire('Verified!', 'OTP verified successfully', 'success').then(() => {
+        // Now process the order
+        processOrder();
+      });
+    } catch (error) {
+      throw error; // Pass error to OTP modal
+    }
+  };
+
+  const processOrder = async () => {
     // Show confirmation
     Swal.fire({
       title: 'Submit Order?',
@@ -120,6 +178,8 @@ const EnhancedCheckout = () => {
         }).then(() => {
           // Clear cart after successful order
           clearCart();
+          // Reset OTP verification for next order
+          setOtpVerified(false);
           // Redirect to home
           navigate('/');
         });
@@ -129,6 +189,14 @@ const EnhancedCheckout = () => {
 
   return (
     <div className="container my-5">
+      <OTPModal
+        isOpen={showOTPModal}
+        onClose={() => setShowOTPModal(false)}
+        onVerify={handleOTPVerify}
+        purpose="checkout"
+        customerId={otpData.customerId}
+        email={otpData.email}
+      />
       <div className="row">
         <div className="col-12">
           <nav aria-label="breadcrumb">

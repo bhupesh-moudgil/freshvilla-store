@@ -3,6 +3,7 @@ import signinimage from '../../images/signin-g.svg'
 import { Link, useNavigate } from "react-router-dom";
 import ScrollToTop from "../ScrollToTop";
 import { useCustomerAuth } from '../../contexts/CustomerAuthContext';
+import OTPModal from '../../components/OTPModal';
 import Swal from 'sweetalert2';
 // import Grocerylogo from '../../images/Grocerylogo.png'
 
@@ -10,16 +11,34 @@ const MyAccountSignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useCustomerAuth();
+  const [showOTPModal, setShowOTPModal] = useState(false);
+  const [otpData, setOtpData] = useState({ customerId: '', email: '' });
+  const { login, verifyOTP } = useCustomerAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(email, password);
-      Swal.fire('Success!', 'Logged in successfully', 'success');
-      navigate('/MyAccountOrder');
+      const result = await login(email, password);
+      
+      if (result.requiresOTP) {
+        // Show OTP modal for suspicious login
+        setOtpData({
+          customerId: result.customerId,
+          email: result.email
+        });
+        setShowOTPModal(true);
+        Swal.fire({
+          icon: 'warning',
+          title: 'Security Verification Required',
+          text: 'We detected suspicious activity. Please check your email for OTP.',
+          confirmButtonColor: '#0aad0a'
+        });
+      } else {
+        Swal.fire('Success!', 'Logged in successfully', 'success');
+        navigate('/MyAccountOrder');
+      }
     } catch (error) {
       Swal.fire('Error', error.message, 'error');
     } finally {
@@ -27,8 +46,27 @@ const MyAccountSignIn = () => {
     }
   };
 
+  const handleOTPVerify = async (otp) => {
+    try {
+      await verifyOTP(otpData.customerId, otp, 'login');
+      setShowOTPModal(false);
+      Swal.fire('Success!', 'Login verified successfully', 'success');
+      navigate('/MyAccountOrder');
+    } catch (error) {
+      throw error; // Pass error to OTP modal
+    }
+  };
+
   return (
     <div>
+      <OTPModal
+        isOpen={showOTPModal}
+        onClose={() => setShowOTPModal(false)}
+        onVerify={handleOTPVerify}
+        purpose="login"
+        customerId={otpData.customerId}
+        email={otpData.email}
+      />
       <>
         <div>
           {/* navigation */}

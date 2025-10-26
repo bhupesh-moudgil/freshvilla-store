@@ -73,6 +73,23 @@ const Customer = sequelize.define('Customer', {
   emailVerificationToken: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  emailOtp: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  emailOtpExpires: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  emailOtpVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  suspiciousLoginAttempts: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    comment: 'Tracks failed login attempts before successful login'
   }
 }, {
   timestamps: true,

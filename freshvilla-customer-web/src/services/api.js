@@ -51,6 +51,8 @@ export const customerAuthAPI = {
   login: (credentials) => api.post('/customer/auth/login', credentials),
   register: (data) => api.post('/customer/auth/register', data),
   getProfile: () => api.get('/customer/auth/me'),
+  verifyOTP: (data) => api.post('/customer/auth/verify-otp', data),
+  resendOTP: (data) => api.post('/customer/auth/resend-otp', data),
 };
 
 // Products API
@@ -81,6 +83,7 @@ export const ordersAPI = {
   create: (data) => api.post('/orders', data),
   updateStatus: (id, data) => api.patch(`/orders/${id}/status`, data),
   getStats: () => api.get('/orders/stats/overview'),
+  requestOTP: (data) => api.post('/orders/request-otp', data),
 };
 
 export default api;
