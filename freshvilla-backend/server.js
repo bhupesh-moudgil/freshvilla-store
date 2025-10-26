@@ -94,18 +94,18 @@ app.use(session({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Data Sanitization against NoSQL Injection
-app.use(mongoSanitize({
-  replaceWith: '_',
-  onSanitize: ({ req, key }) => {
-    console.warn(`Potential NoSQL injection attempt detected in ${key}`);
-  }
-}));
+// Data Sanitization against NoSQL Injection (temporarily disabled)
+// app.use(mongoSanitize({
+//   replaceWith: '_',
+//   onSanitize: ({ req, key }) => {
+//     console.warn(`Potential NoSQL injection attempt detected in ${key}`);
+//   }
+// }));
 
-// Prevent HTTP Parameter Pollution
-app.use(hpp({
-  whitelist: ['price', 'category', 'rating', 'discount'] // Allow duplicate params for filters
-}));
+// Prevent HTTP Parameter Pollution (temporarily disabled due to readonly property issues)
+// app.use(hpp({
+//   whitelist: ['price', 'category', 'rating', 'discount'] // Allow duplicate params for filters
+// }));
 
 // Advanced Input Sanitization (XSS, SQL, NoSQL, Command Injection)
 const { sanitizeInput } = require('./src/middleware/sanitize');

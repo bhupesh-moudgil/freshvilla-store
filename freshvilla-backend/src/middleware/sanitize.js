@@ -95,20 +95,13 @@ function deepSanitize(obj, depth = 0) {
  */
 const sanitizeInput = (req, res, next) => {
   try {
-    // Sanitize request body
+    // Sanitize request body only (query/params sanitization disabled due to Express readonly properties)
     if (req.body && Object.keys(req.body).length > 0) {
       req.body = deepSanitize(req.body);
     }
     
-    // Sanitize query parameters
-    if (req.query && Object.keys(req.query).length > 0) {
-      req.query = deepSanitize(req.query);
-    }
-    
-    // Sanitize URL parameters
-    if (req.params && Object.keys(req.params).length > 0) {
-      req.params = deepSanitize(req.params);
-    }
+    // Note: Query and params sanitization temporarily disabled
+    // TODO: Implement proper sanitization without reassigning readonly properties
     
     next();
   } catch (error) {
