@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.07c96b32.css",
-    "main.js": "/static/js/main.a7e5b844.js",
+    "main.js": "/static/js/main.9b7d305e.js",
     "static/js/453.9269f58b.chunk.js": "/static/js/453.9269f58b.chunk.js",
     "static/media/team.gif": "/static/media/team.1f5b908b7e041200fb7e.gif",
     "static/media/map.png": "/static/media/map.782e7890e48d971d1984.png",
@@ -30,11 +30,11 @@
     "static/media/product-single-img-3.jpg": "/static/media/product-single-img-3.3649430e518af253021b.jpg",
     "static/media/grocery-banner-2.jpg": "/static/media/grocery-banner-2.7a4a78a90acc3d5847cb.jpg",
     "static/media/fa-solid-900.woff2": "/static/media/fa-solid-900.4d986b00ff9ca3828fbd.woff2",
+    "static/media/iphone-2.png": "/static/media/iphone-2.27bc5a50326288c783e7.png",
     "static/media/cover.jpg": "/static/media/cover.dea5106ced24ceb16d10.jpg",
     "static/media/member8.jpg": "/static/media/member8.23cb53e71f11cb21abe3.jpg",
     "static/media/signup-g.svg": "/static/media/signup-g.5d3db3f65498f74a306680943f07dfe9.svg",
     "static/media/fa-brands-400.woff2": "/static/media/fa-brands-400.455ea818179b4def0c43.woff2",
-    "static/media/iphone-2.png": "/static/media/iphone-2.b31c6aac16c253516728.png",
     "static/media/menu-banner.jpg": "/static/media/menu-banner.7c40d45b48b2a74a0f58.jpg",
     "static/media/flipkartlogo.png": "/static/media/flipkartlogo.e942e41f9ef663eb4c36.png",
     "static/media/contact-bg.png": "/static/media/contact-bg.593f2f108a408eb3caeb.png",
@@ -125,11 +125,11 @@
     "static/media/refresh-cw.svg": "/static/media/refresh-cw.d663d4fbc24f15adb46efb842329dc7a.svg",
     "static/media/clock.svg": "/static/media/clock.91e2fc1242f6b6fe1217bb6db4ae1e2e.svg",
     "main.07c96b32.css.map": "/static/css/main.07c96b32.css.map",
-    "main.a7e5b844.js.map": "/static/js/main.a7e5b844.js.map",
+    "main.9b7d305e.js.map": "/static/js/main.9b7d305e.js.map",
     "453.9269f58b.chunk.js.map": "/static/js/453.9269f58b.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.07c96b32.css",
-    "static/js/main.a7e5b844.js"
+    "static/js/main.9b7d305e.js"
   ]
 }
