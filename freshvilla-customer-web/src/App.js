@@ -11,6 +11,7 @@ import WhatsAppButton from './Component/WhatsAppButton';
 import { CartProvider } from './contexts/CartContext';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import CustomerProtectedRoute from './components/CustomerProtectedRoute';
 import AdminLogin from './pages/Admin/AdminLogin';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import ProductsList from './pages/Admin/Products/ProductsList';
@@ -65,18 +66,18 @@ const App = () => {
           <Route path="/ShopGridCol3" element={<ShopGridCol3 />} />
           <Route path="/ShopListCol" element={<ShopListCol />} />
           <Route path="/ShopWishList" element={<ShopWishList />} />
-          <Route path="/ShopCheckOut" element={<ShopCheckOut />} />
+          <Route path="/ShopCheckOut" element={<CustomerProtectedRoute><ShopCheckOut /></CustomerProtectedRoute>} />
           <Route path="/ShopCart" element={<ShopCart />} />
-          <Route path="/Checkout" element={<EnhancedCheckout />} />
+          <Route path="/Checkout" element={<CustomerProtectedRoute><EnhancedCheckout /></CustomerProtectedRoute>} />
           {/* Store pages */}
           <Route path="/StoreList" element={<StoreList />} />
           <Route path="/SingleShop" element={<SingleShop />} />
-          {/* Accounts pages */}
-          <Route path="/MyAccountOrder" element={<MyAccountOrder />} />
-          <Route path="/MyAccountSetting" element={<MyAccountSetting />} />
-          <Route path="/MyAcconutNotification" element={<MyAcconutNotification />} />
-          <Route path="/MyAcconutPaymentMethod" element={<MyAcconutPaymentMethod />} />
-          <Route path="/MyAccountAddress" element={<MyAccountAddress />} />
+          {/* Accounts pages - Protected */}
+          <Route path="/MyAccountOrder" element={<CustomerProtectedRoute><MyAccountOrder /></CustomerProtectedRoute>} />
+          <Route path="/MyAccountSetting" element={<CustomerProtectedRoute><MyAccountSetting /></CustomerProtectedRoute>} />
+          <Route path="/MyAcconutNotification" element={<CustomerProtectedRoute><MyAcconutNotification /></CustomerProtectedRoute>} />
+          <Route path="/MyAcconutPaymentMethod" element={<CustomerProtectedRoute><MyAcconutPaymentMethod /></CustomerProtectedRoute>} />
+          <Route path="/MyAccountAddress" element={<CustomerProtectedRoute><MyAccountAddress /></CustomerProtectedRoute>} />
           <Route path="/MyAccountForgetPassword" element={<MyAccountForgetPassword />} />
           <Route path="/MyAccountSignIn" element={<MyAccountSignIn />} />
           <Route path="/MyAccountSignUp" element={<MyAccountSignUp />} />

@@ -5,6 +5,8 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
 const { connectDB } = require('./src/config/database');
 const errorHandler = require('./src/middleware/errorHandler');
 
@@ -68,6 +70,25 @@ const passwordResetLimiter = rateLimit({
 });
 
 app.use('/api/', apiLimiter);
+
+// Cookie Parser with signed cookies
+app.use(cookieParser(process.env.COOKIE_SECRET || 'fallback-secret-change-in-production'));
+
+// Session Configuration with secure settings
+app.use(session({
+  secret: process.env.SESSION_SECRET || process.env.JWT_SECRET,
+  name: 'sessionId', // Don't use default 'connect.sid'
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+    httpOnly: true, // Prevent JavaScript access
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    sameSite: 'strict', // CSRF protection
+    domain: process.env.NODE_ENV === 'production' ? '.freshvilla.in' : undefined
+  },
+  rolling: true // Reset expiration on activity
+}));
 
 // Body Parser Middleware
 app.use(express.json({ limit: '10mb' }));
