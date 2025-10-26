@@ -39,11 +39,18 @@ api.interceptors.response.use(
   }
 );
 
-// Auth API
+// Auth API (Admin)
 export const authAPI = {
   login: (credentials) => api.post('/auth/login', credentials),
   register: (data) => api.post('/auth/register', data),
   getProfile: () => api.get('/auth/me'),
+};
+
+// Customer Auth API
+export const customerAuthAPI = {
+  login: (credentials) => api.post('/customer/auth/login', credentials),
+  register: (data) => api.post('/customer/auth/register', data),
+  getProfile: () => api.get('/customer/auth/me'),
 };
 
 // Products API
