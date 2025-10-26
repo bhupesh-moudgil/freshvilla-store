@@ -55,6 +55,18 @@
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    
+    <!-- Handle redirects from 404.html -->
+    <script type="text/javascript">
+      (function() {
+        var redirect = sessionStorage.getItem('redirectPath');
+        if (redirect && redirect !== '/' && redirect !== window.location.pathname) {
+          sessionStorage.removeItem('redirectPath');
+          window.history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
+    
     <div id="root"></div>
     <!--
       This HTML file is a template.
