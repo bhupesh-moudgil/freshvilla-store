@@ -29,7 +29,7 @@ services:
       - key: JWT_EXPIRE
         value: 7d
       - key: ADMIN_EMAIL
-        value: admin@freshvilla.com
+        value: admin@freshvilla.in
       - key: ADMIN_PASSWORD
         value: Admin@123
       - key: FRONTEND_URL

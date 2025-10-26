@@ -67,7 +67,7 @@ router.post('/', async (req, res) => {
     // Create default admin
     const admin = await Admin.create({
       name: 'Admin User',
-      email: process.env.ADMIN_EMAIL || 'admin@freshvilla.com',
+      email: process.env.ADMIN_EMAIL || 'admin@freshvilla.in',
       password: process.env.ADMIN_PASSWORD || 'Admin@123',
       role: 'super-admin'
     });
