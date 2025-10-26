@@ -120,6 +120,7 @@ app.use('/api/products', require('./src/routes/products'));
 app.use('/api/coupons', require('./src/routes/coupons'));
 app.use('/api/orders', require('./src/routes/orders'));
 app.use('/api/seed', require('./src/routes/seed'));
+app.use('/api/upload', require('./src/routes/upload'));
 
 // Health check
 app.get('/api/health', (req, res) => {

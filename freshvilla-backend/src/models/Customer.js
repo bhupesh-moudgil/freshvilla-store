@@ -90,6 +90,31 @@ const Customer = sequelize.define('Customer', {
     type: DataTypes.INTEGER,
     defaultValue: 0,
     comment: 'Tracks failed login attempts before successful login'
+  },
+  mobileVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    comment: 'Whether mobile number is verified via WhatsApp link'
+  },
+  mobileVerificationToken: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    comment: 'Token for mobile verification link'
+  },
+  mobileVerificationExpires: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    comment: 'Expiry time for mobile verification token (24 hours)'
+  },
+  mobileVerificationSentAt: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    comment: 'Last time verification message was sent (for rate limiting)'
+  },
+  mobileVerificationAttempts: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0,
+    comment: 'Number of verification attempts (max 3 per day)'
   }
 }, {
   timestamps: true,

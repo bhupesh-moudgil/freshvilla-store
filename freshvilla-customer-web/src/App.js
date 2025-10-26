@@ -13,6 +13,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { CustomerAuthProvider } from './contexts/CustomerAuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import CustomerProtectedRoute from './components/CustomerProtectedRoute';
+import UpdateChecker from './components/UpdateChecker';
 import AdminLogin from './pages/Admin/AdminLogin';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import ProductsList from './pages/Admin/Products/ProductsList';
@@ -60,6 +61,7 @@ const App = () => {
       <CustomerAuthProvider>
         <CartProvider>
           <div>
+            <UpdateChecker />
             <Router>
         <Header/>
         <Routes>
