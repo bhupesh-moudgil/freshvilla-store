@@ -43,3 +43,5 @@ services:
       - key: SMTP_FROM
         value: info@freshvilla.in
       # SMTP_PASSWORD should be added manually in Render dashboard as a secret
+      # Generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+      # SETTINGS_ENCRYPTION_KEY should also be added manually in Render dashboard

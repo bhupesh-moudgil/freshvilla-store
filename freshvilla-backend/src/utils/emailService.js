@@ -1,24 +1,40 @@
 const nodemailer = require('nodemailer');
+const Settings = require('../models/Settings');
 
-// Create transporter using Mailgun SMTP
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.mailgun.org',
-  port: process.env.SMTP_PORT || 587,
-  secure: false, // true for 465, false for other ports
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASSWORD
-  }
-});
+let transporter = null;
 
-// Verify transporter configuration
-transporter.verify((error, success) => {
-  if (error) {
-    console.error('SMTP connection error:', error);
-  } else {
+// Initialize transporter with settings from database or environment
+async function initializeTransporter() {
+  try {
+    // Try to get settings from database first
+    const smtpHost = await Settings.getByKey('smtp_host') || process.env.SMTP_HOST || 'smtp.mailgun.org';
+    const smtpPort = await Settings.getByKey('smtp_port') || process.env.SMTP_PORT || 587;
+    const smtpUser = await Settings.getByKey('smtp_user') || process.env.SMTP_USER;
+    const smtpPassword = await Settings.getByKey('smtp_password') || process.env.SMTP_PASSWORD;
+
+    transporter = nodemailer.createTransport({
+      host: smtpHost,
+      port: parseInt(smtpPort),
+      secure: false, // true for 465, false for other ports
+      auth: {
+        user: smtpUser,
+        pass: smtpPassword
+      }
+    });
+
+    // Verify transporter configuration
+    await transporter.verify();
     console.log('✅ SMTP server is ready to send emails');
+    console.log(`   Host: ${smtpHost}:${smtpPort}`);
+    console.log(`   User: ${smtpUser}`);
+  } catch (error) {
+    console.error('⚠️  SMTP connection error:', error.message);
+    console.log('   Email functionality will be disabled');
   }
-});
+}
+
+// Initialize on module load
+initializeTransporter();
 
 // Send email function
 const sendEmail = async ({ to, subject, html, text }) => {
