@@ -3,8 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const mongoSanitize = require('express-mongo-sanitize');
-const hpp = require('hpp');
+// const mongoSanitize = require('express-mongo-sanitize'); // Removed - causes readonly property errors
+// const hpp = require('hpp'); // Removed - causes readonly property errors
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const { connectDB } = require('./src/config/database');
@@ -94,22 +94,17 @@ app.use(session({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Data Sanitization against NoSQL Injection (temporarily disabled)
-// app.use(mongoSanitize({
-//   replaceWith: '_',
-//   onSanitize: ({ req, key }) => {
-//     console.warn(`Potential NoSQL injection attempt detected in ${key}`);
-//   }
-// }));
-
-// Prevent HTTP Parameter Pollution (temporarily disabled due to readonly property issues)
-// app.use(hpp({
-//   whitelist: ['price', 'category', 'rating', 'discount'] // Allow duplicate params for filters
-// }));
-
 // Advanced Input Sanitization (XSS, SQL, NoSQL, Command Injection)
 const { sanitizeInput } = require('./src/middleware/sanitize');
 app.use(sanitizeInput);
+
+// Data Sanitization against NoSQL Injection
+// Handled by sanitizeInput middleware (custom implementation)
+// mongoSanitize package removed due to Express compatibility issues
+
+// Parameter Pollution Prevention (manual implementation)
+// HPP package removed due to Express compatibility issues
+// Protection handled by sanitizeInput middleware
 
 // Routes
 app.use('/api/auth', require('./src/routes/auth'));
