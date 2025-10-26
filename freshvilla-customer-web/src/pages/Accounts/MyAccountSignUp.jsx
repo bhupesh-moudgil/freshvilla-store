@@ -1,9 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import signupimage from '../../images/signup-g.svg'
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ScrollToTop from "../ScrollToTop";
+import { useCustomerAuth } from '../../contexts/CustomerAuthContext';
+import Swal from 'sweetalert2';
 
 const MyAccountSignUp = () => {
+  const [formData, setFormData] = useState({firstName: '', lastName: '', email: '', password: ''});
+  const [loading, setLoading] = useState(false);
+  const { register } = useCustomerAuth();
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await register({
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        password: formData.password
+      });
+      Swal.fire('Success!', 'Account created successfully', 'success');
+      navigate('/MyAccountOrder');
+    } catch (error) {
+      Swal.fire('Error', error.message, 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
        <>
@@ -31,7 +56,7 @@ const MyAccountSignUp = () => {
                   <p>Welcome to FreshVilla! Enter your email to get started.</p>
                 </div>
                 {/* form */}
-                <form>
+                <form onSubmit={handleSubmit}>
                   <div className="row g-3">
                     {/* col */}
                     <div className="col">
@@ -40,7 +65,8 @@ const MyAccountSignUp = () => {
                         type="text"
                         className="form-control"
                         placeholder="First name"
-                        aria-label="First name"
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({...formData, firstName: e.target.value})}
                         required
                       />
                     </div>
@@ -50,7 +76,8 @@ const MyAccountSignUp = () => {
                         type="text"
                         className="form-control"
                         placeholder="Last name"
-                        aria-label="Last name"
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({...formData, lastName: e.target.value})}
                         required
                       />
                     </div>
@@ -61,6 +88,8 @@ const MyAccountSignUp = () => {
                         className="form-control"
                         id="inputEmail4"
                         placeholder="Email"
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
                         required
                       />
                     </div>
@@ -70,15 +99,18 @@ const MyAccountSignUp = () => {
                         type="password"
                         className="form-control"
                         id="inputPassword4"
-                        placeholder="Password"
+                        placeholder="Password (min 6 characters)"
+                        value={formData.password}
+                        onChange={(e) => setFormData({...formData, password: e.target.value})}
+                        minLength="6"
                         required
                       />
                     </div>
                     {/* btn */}
                     <div className="col-12 d-grid">
                       {" "}
-                      <button type="submit" className="btn btn-primary">
-                        Register
+                      <button type="submit" className="btn btn-primary" disabled={loading}>
+                        {loading ? 'Creating Account...' : 'Register'}
                       </button>
                       <span className="navbar-text">
                           Already have an account?{" "}
