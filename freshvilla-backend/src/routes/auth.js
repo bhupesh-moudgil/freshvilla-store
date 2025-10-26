@@ -2,12 +2,28 @@ const express = require('express');
 const router = express.Router();
 const Admin = require('../models/Admin');
 const { generateToken, protect } = require('../middleware/auth');
+const { validate, validations } = require('../middleware/validation');
+const rateLimit = require('express-rate-limit');
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: 'Too many authentication attempts',
+  skipSuccessfulRequests: true
+});
 
 // @route   POST /api/auth/register
 // @desc    Register a new admin
-// @access  Public (Should be protected in production)
-router.post('/register', async (req, res) => {
+// @access  Private (Super-admin only)
+router.post('/register', protect, validations.adminRegister, validate, async (req, res) => {
   try {
+    // Only super-admins can create new admins
+    if (req.admin.role !== 'super-admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Only super-admins can create new admin accounts'
+      });
+    }
     const { name, email, password } = req.body;
 
     // Check if admin already exists
@@ -43,9 +59,10 @@ router.post('/register', async (req, res) => {
       }
     });
   } catch (error) {
+    console.error('Admin registration error:', error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: 'Registration failed. Please try again later.'
     });
   }
 });
@@ -53,7 +70,7 @@ router.post('/register', async (req, res) => {
 // @route   POST /api/auth/login
 // @desc    Login admin
 // @access  Public
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, validations.adminLogin, validate, async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -73,7 +90,16 @@ router.post('/login', async (req, res) => {
     if (!admin) {
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials'
+        message: 'Invalid email or password'
+      });
+    }
+
+    // Check if account is locked
+    if (admin.accountLockedUntil && admin.accountLockedUntil > new Date()) {
+      const minutesLeft = Math.ceil((admin.accountLockedUntil - new Date()) / 60000);
+      return res.status(429).json({
+        success: false,
+        message: `Account is temporarily locked. Try again in ${minutesLeft} minute(s).`
       });
     }
 
@@ -89,13 +115,29 @@ router.post('/login', async (req, res) => {
     const isMatch = await admin.comparePassword(password);
     
     if (!isMatch) {
+      // Increment failed attempts
+      admin.failedLoginAttempts += 1;
+      
+      // Lock account after 5 failed attempts for 15 minutes
+      if (admin.failedLoginAttempts >= 5) {
+        admin.accountLockedUntil = new Date(Date.now() + 15 * 60 * 1000);
+        await admin.save();
+        return res.status(429).json({
+          success: false,
+          message: 'Account locked due to too many failed login attempts. Try again in 15 minutes.'
+        });
+      }
+      
+      await admin.save();
       return res.status(401).json({
         success: false,
-        message: 'Invalid credentials'
+        message: 'Invalid email or password'
       });
     }
 
-    // Update last login
+    // Reset failed attempts on successful login
+    admin.failedLoginAttempts = 0;
+    admin.accountLockedUntil = null;
     admin.lastLogin = Date.now();
     await admin.save();
 

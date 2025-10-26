@@ -1,17 +1,21 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
 const Customer = require('../models/Customer');
 const { sendPasswordResetEmail } = require('../utils/emailService');
+const { validate, validations } = require('../middleware/validation');
+const rateLimit = require('express-rate-limit');
 
-// Store reset tokens temporarily (in production, use Redis or database)
-const resetTokens = new Map();
+const passwordResetLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 3,
+  message: 'Too many password reset requests'
+});
 
 // @route   POST /api/password-reset/request
 // @desc    Request password reset (send email)
 // @access  Public
-router.post('/request', async (req, res) => {
+router.post('/request', passwordResetLimiter, validations.passwordResetRequest, validate, async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -39,19 +43,10 @@ router.post('/request', async (req, res) => {
     const resetToken = crypto.randomBytes(32).toString('hex');
     const tokenHash = crypto.createHash('sha256').update(resetToken).digest('hex');
 
-    // Store token with expiration (1 hour)
-    resetTokens.set(tokenHash, {
-      customerId: customer.id,
-      email: customer.email,
-      expiresAt: Date.now() + 3600000 // 1 hour
-    });
-
-    // Clean up expired tokens
-    for (const [key, value] of resetTokens.entries()) {
-      if (value.expiresAt < Date.now()) {
-        resetTokens.delete(key);
-      }
-    }
+    // Store token in database with 1 hour expiration
+    customer.resetPasswordToken = tokenHash;
+    customer.resetPasswordExpires = new Date(Date.now() + 3600000);
+    await customer.save();
 
     // Send email
     await sendPasswordResetEmail(customer.email, customer.name, resetToken);
@@ -84,9 +79,14 @@ router.post('/verify', async (req, res) => {
     }
 
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    const tokenData = resetTokens.get(tokenHash);
+    
+    const customer = await Customer.findOne({
+      where: {
+        resetPasswordToken: tokenHash
+      }
+    });
 
-    if (!tokenData || tokenData.expiresAt < Date.now()) {
+    if (!customer || !customer.resetPasswordExpires || customer.resetPasswordExpires < new Date()) {
       return res.status(400).json({
         success: false,
         message: 'Invalid or expired reset token'
@@ -108,7 +108,7 @@ router.post('/verify', async (req, res) => {
 // @route   POST /api/password-reset/reset
 // @desc    Reset password with token
 // @access  Public
-router.post('/reset', async (req, res) => {
+router.post('/reset', validations.passwordReset, validate, async (req, res) => {
   try {
     const { token, newPassword } = req.body;
 
@@ -119,38 +119,29 @@ router.post('/reset', async (req, res) => {
       });
     }
 
-    if (newPassword.length < 6) {
-      return res.status(400).json({
-        success: false,
-        message: 'Password must be at least 6 characters'
-      });
-    }
-
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
-    const tokenData = resetTokens.get(tokenHash);
-
-    if (!tokenData || tokenData.expiresAt < Date.now()) {
+    
+    // Find customer with valid token
+    const customer = await Customer.scope('withPassword').findOne({
+      where: {
+        resetPasswordToken: tokenHash
+      }
+    });
+    
+    if (!customer || !customer.resetPasswordExpires || customer.resetPasswordExpires < new Date()) {
       return res.status(400).json({
         success: false,
         message: 'Invalid or expired reset token'
       });
     }
 
-    // Find customer and update password
-    const customer = await Customer.scope('withPassword').findByPk(tokenData.customerId);
-    
-    if (!customer) {
-      return res.status(404).json({
-        success: false,
-        message: 'Customer not found'
-      });
-    }
-
+    // Update password and clear reset token
     customer.password = newPassword;
+    customer.resetPasswordToken = null;
+    customer.resetPasswordExpires = null;
+    customer.failedLoginAttempts = 0;
+    customer.accountLockedUntil = null;
     await customer.save();
-
-    // Delete used token
-    resetTokens.delete(tokenHash);
 
     res.json({
       success: true,

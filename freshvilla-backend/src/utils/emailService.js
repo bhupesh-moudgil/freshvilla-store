@@ -136,9 +136,42 @@ const sendSignInNotificationEmail = async (userEmail, userName, ipAddress, times
   return sendEmail({ to: userEmail, subject, html, text });
 };
 
+// Email verification template
+const sendVerificationEmail = async (userEmail, userName, verificationToken) => {
+  const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+  const subject = 'Verify Your Email - FreshVilla';
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #0aad0a;">Verify Your Email</h2>
+      <p>Hi ${userName},</p>
+      <p>Thank you for signing up with FreshVilla! Please verify your email address to activate your account.</p>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${verificationUrl}" 
+           style="background-color: #0aad0a; color: white; padding: 12px 30px; 
+                  text-decoration: none; border-radius: 5px; display: inline-block;">
+          Verify Email
+        </a>
+      </div>
+      <p>Or copy and paste this link in your browser:</p>
+      <p style="color: #666; word-break: break-all;">${verificationUrl}</p>
+      <p><strong>This link will expire in 24 hours.</strong></p>
+      <br>
+      <p>Best regards,<br>The FreshVilla Team</p>
+      <hr style="border: none; border-top: 1px solid #eee;">
+      <p style="font-size: 12px; color: #999;">
+        If you didn't sign up for FreshVilla, please ignore this email.
+      </p>
+    </div>
+  `;
+  const text = `Verify your email for FreshVilla. Click this link: ${verificationUrl}. Link expires in 24 hours.`;
+
+  return sendEmail({ to: userEmail, subject, html, text });
+};
+
 module.exports = {
   sendEmail,
   sendWelcomeEmail,
   sendPasswordResetEmail,
-  sendSignInNotificationEmail
+  sendSignInNotificationEmail,
+  sendVerificationEmail
 };

@@ -46,6 +46,14 @@ const Admin = sequelize.define('Admin', {
   },
   lastLogin: {
     type: DataTypes.DATE
+  },
+  failedLoginAttempts: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  accountLockedUntil: {
+    type: DataTypes.DATE,
+    allowNull: true
   }
 }, {
   timestamps: true,

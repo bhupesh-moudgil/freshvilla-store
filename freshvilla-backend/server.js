@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const { connectDB } = require('./src/config/database');
 const errorHandler = require('./src/middleware/errorHandler');
 
@@ -10,7 +12,13 @@ const app = express();
 // Connect to Database
 connectDB();
 
-// Middleware
+// Security Middleware
+app.use(helmet({
+  contentSecurityPolicy: false, // Allow inline scripts for frontend
+  crossOriginEmbedderPolicy: false
+}));
+
+// CORS Configuration
 const allowedOrigins = [
   'http://localhost:3000',
   'http://freshvilla.in',
@@ -22,8 +30,10 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+    // Only allow requests from allowed origins or during development
+    if (!origin && process.env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
@@ -32,8 +42,34 @@ app.use(cors({
   },
   credentials: true
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Rate Limiting
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later',
+  standardHeaders: true,
+  legacyHeaders: false
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // 5 attempts per window
+  message: 'Too many authentication attempts, please try again later',
+  skipSuccessfulRequests: true
+});
+
+const passwordResetLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // 3 requests per hour
+  message: 'Too many password reset requests, please try again later'
+});
+
+app.use('/api/', apiLimiter);
+
+// Body Parser Middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Routes
 app.use('/api/auth', require('./src/routes/auth'));

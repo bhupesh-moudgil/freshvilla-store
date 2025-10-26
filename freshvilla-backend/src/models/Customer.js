@@ -49,6 +49,30 @@ const Customer = sequelize.define('Customer', {
   },
   lastLogin: {
     type: DataTypes.DATE
+  },
+  failedLoginAttempts: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
+  },
+  accountLockedUntil: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  resetPasswordToken: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  resetPasswordExpires: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  emailVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  emailVerificationToken: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 }, {
   timestamps: true,
