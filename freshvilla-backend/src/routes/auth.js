@@ -11,7 +11,7 @@ router.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
 
     // Check if admin already exists
-    const existingAdmin = await Admin.findOne({ email });
+    const existingAdmin = await Admin.findOne({ where: { email } });
     if (existingAdmin) {
       return res.status(400).json({
         success: false,
@@ -27,14 +27,14 @@ router.post('/register', async (req, res) => {
     });
 
     // Generate token
-    const token = generateToken(admin._id);
+    const token = generateToken(admin.id);
 
     res.status(201).json({
       success: true,
       message: 'Admin registered successfully',
       data: {
         admin: {
-          id: admin._id,
+          id: admin.id,
           name: admin.name,
           email: admin.email,
           role: admin.role
@@ -66,7 +66,9 @@ router.post('/login', async (req, res) => {
     }
 
     // Check for admin (include password field)
-    const admin = await Admin.findOne({ email }).select('+password');
+    const admin = await Admin.scope('withPassword').findOne({ 
+      where: { email: email.toLowerCase() }
+    });
     
     if (!admin) {
       return res.status(401).json({
@@ -98,14 +100,14 @@ router.post('/login', async (req, res) => {
     await admin.save();
 
     // Generate token
-    const token = generateToken(admin._id);
+    const token = generateToken(admin.id);
 
     res.json({
       success: true,
       message: 'Login successful',
       data: {
         admin: {
-          id: admin._id,
+          id: admin.id,
           name: admin.name,
           email: admin.email,
           role: admin.role
