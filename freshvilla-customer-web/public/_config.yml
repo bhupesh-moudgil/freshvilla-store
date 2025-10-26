@@ -1,0 +1,5 @@
+# GitHub Pages Configuration
+# This ensures proper routing for React Router
+
+# Don't use Jekyll processing
+plugins: []
