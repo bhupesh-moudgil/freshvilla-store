@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/freshvilla-store/static/css/main.8c64a996.css",
-    "main.js": "/freshvilla-store/static/js/main.ed489bfd.js",
+    "main.js": "/freshvilla-store/static/js/main.c931f327.js",
     "static/js/453.9269f58b.chunk.js": "/freshvilla-store/static/js/453.9269f58b.chunk.js",
     "static/media/team.gif": "/freshvilla-store/static/media/team.1f5b908b7e041200fb7e.gif",
     "static/media/map.png": "/freshvilla-store/static/media/map.782e7890e48d971d1984.png",
@@ -112,11 +112,11 @@
     "static/media/refresh-cw.svg": "/freshvilla-store/static/media/refresh-cw.d663d4fbc24f15adb46efb842329dc7a.svg",
     "static/media/clock.svg": "/freshvilla-store/static/media/clock.91e2fc1242f6b6fe1217bb6db4ae1e2e.svg",
     "main.8c64a996.css.map": "/freshvilla-store/static/css/main.8c64a996.css.map",
-    "main.ed489bfd.js.map": "/freshvilla-store/static/js/main.ed489bfd.js.map",
+    "main.c931f327.js.map": "/freshvilla-store/static/js/main.c931f327.js.map",
     "453.9269f58b.chunk.js.map": "/freshvilla-store/static/js/453.9269f58b.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.8c64a996.css",
-    "static/js/main.ed489bfd.js"
+    "static/js/main.c931f327.js"
   ]
 }
