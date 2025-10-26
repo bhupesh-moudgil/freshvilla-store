@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/freshvilla-store/static/css/main.8c64a996.css",
-    "main.js": "/freshvilla-store/static/js/main.9bd3a5c7.js",
+    "main.js": "/freshvilla-store/static/js/main.27fc8b4c.js",
     "static/js/453.9269f58b.chunk.js": "/freshvilla-store/static/js/453.9269f58b.chunk.js",
     "static/media/team.gif": "/freshvilla-store/static/media/team.1f5b908b7e041200fb7e.gif",
     "static/media/map.png": "/freshvilla-store/static/media/map.782e7890e48d971d1984.png",
@@ -36,13 +36,13 @@
     "static/media/banner-deal1.jpg": "/freshvilla-store/static/media/banner-deal1.0d876b93afaaf6eb4f18.jpg",
     "static/media/smartshop.png": "/freshvilla-store/static/media/smartshop.0132cf752c042b55db8c.png",
     "static/media/member5.jpg": "/freshvilla-store/static/media/member5.970e6cdc18ce83c0c8b5.jpg",
+    "static/media/Grocerylogo.png": "/freshvilla-store/static/media/Grocerylogo.ca0de802d40bddfd6d0a.png",
     "static/media/member7.jpg": "/freshvilla-store/static/media/member7.870225c1a5bda048b310.jpg",
     "static/media/ad-banner-2.jpg": "/freshvilla-store/static/media/ad-banner-2.393e75120ae13ecca299.jpg",
     "static/media/ad-banner-1.jpg": "/freshvilla-store/static/media/ad-banner-1.3e0523a31dcc0975ce9f.jpg",
     "static/media/product-img-12.jpg": "/freshvilla-store/static/media/product-img-12.3ac374e9db96684b02b1.jpg",
     "static/media/bg-2.jpg": "/freshvilla-store/static/media/bg-2.f18abe9df3bf75e76653.jpg",
     "static/media/02.jpg": "/freshvilla-store/static/media/02.0fb822880fa0b36d6b97.jpg",
-    "static/media/Grocerylogo.png": "/freshvilla-store/static/media/Grocerylogo.f1c1c78ea85df17396c7.png",
     "static/media/blinkit.png": "/freshvilla-store/static/media/blinkit.89d20c694abb76d411dd.png",
     "static/media/product-img-1.jpg": "/freshvilla-store/static/media/product-img-1.c1969a87644799f924d4.jpg",
     "static/media/product-img-5.jpg": "/freshvilla-store/static/media/product-img-5.d637ee0998697dbf234c.jpg",
@@ -112,11 +112,11 @@
     "static/media/refresh-cw.svg": "/freshvilla-store/static/media/refresh-cw.d663d4fbc24f15adb46efb842329dc7a.svg",
     "static/media/clock.svg": "/freshvilla-store/static/media/clock.91e2fc1242f6b6fe1217bb6db4ae1e2e.svg",
     "main.8c64a996.css.map": "/freshvilla-store/static/css/main.8c64a996.css.map",
-    "main.9bd3a5c7.js.map": "/freshvilla-store/static/js/main.9bd3a5c7.js.map",
+    "main.27fc8b4c.js.map": "/freshvilla-store/static/js/main.27fc8b4c.js.map",
     "453.9269f58b.chunk.js.map": "/freshvilla-store/static/js/453.9269f58b.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.8c64a996.css",
-    "static/js/main.9bd3a5c7.js"
+    "static/js/main.27fc8b4c.js"
   ]
 }
