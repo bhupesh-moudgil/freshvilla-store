@@ -9,6 +9,12 @@ import Header from './Component/Header';
 import Footer from "./Component/Footer";
 import WhatsAppButton from './Component/WhatsAppButton';
 import { CartProvider } from './contexts/CartContext';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import AdminLogin from './pages/Admin/AdminLogin';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import ProductsList from './pages/Admin/Products/ProductsList';
+import ProductCreate from './pages/Admin/Products/ProductCreate';
 // pages
 import Home from "./pages/Home";
 // About pages
@@ -43,9 +49,10 @@ import HelpCenter from "./pages/FooterElements/HelpCenter";
 import AdminSettings from "./pages/AdminSettings";
 const App = () => {
   return (
-    <CartProvider>
-      <div>
-        <Router basename="/freshvilla-store">
+    <AuthProvider>
+      <CartProvider>
+        <div>
+          <Router basename="/freshvilla-store">
         <Header/>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -80,13 +87,19 @@ const App = () => {
           <Route path="/Careers" element={<Careers />} />
           <Route path="/helpcenter" element={<HelpCenter />} />
           {/* Admin */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin/products" element={<ProtectedRoute><ProductsList /></ProtectedRoute>} />
+          <Route path="/admin/products/create" element={<ProtectedRoute><ProductCreate /></ProtectedRoute>} />
+          <Route path="/admin/products/edit/:id" element={<ProtectedRoute><ProductCreate /></ProtectedRoute>} />
           <Route path="/admin/settings" element={<AdminSettings />} />
         </Routes>
         <Footer/>
         <WhatsAppButton />
-        </Router>
-      </div>
-    </CartProvider>
+          </Router>
+        </div>
+      </CartProvider>
+    </AuthProvider>
   );
 };
 

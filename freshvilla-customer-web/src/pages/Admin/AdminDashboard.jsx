@@ -1,22 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, Routes, Route } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { ordersAPI } from '../../services/api';
-
-// Import Admin Pages
-import ProductsList from './Products/ProductsList';
-import ProductCreate from './Products/ProductCreate';
-import ProductEdit from './Products/ProductEdit';
-import CouponsList from './Coupons/CouponsList';
-import CouponCreate from './Coupons/CouponCreate';
-import OrdersList from './Orders/OrdersList';
-import DashboardHome from './DashboardHome';
+import { ordersAPI, productsAPI } from '../../services/api';
 
 const AdminDashboard = () => {
   const { admin, logout } = useAuth();
   const navigate = useNavigate();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState({
+    totalOrders: 0,
+    totalRevenue: 0,
+    totalProducts: 0,
+    pendingOrders: 0
+  });
 
   useEffect(() => {
     loadStats();
@@ -24,8 +19,20 @@ const AdminDashboard = () => {
 
   const loadStats = async () => {
     try {
-      const response = await ordersAPI.getStats();
-      setStats(response.data.data);
+      const [ordersRes, productsRes] = await Promise.all([
+        ordersAPI.getAll().catch(() => ({ data: { data: [] } })),
+        productsAPI.getAll().catch(() => ({ data: { data: [] } }))
+      ]);
+      
+      const orders = ordersRes.data.data || [];
+      const products = productsRes.data.data || [];
+      
+      setStats({
+        totalOrders: orders.length,
+        totalRevenue: orders.reduce((sum, order) => sum + parseFloat(order.total || 0), 0),
+        totalProducts: products.length,
+        pendingOrders: orders.filter(o => o.orderStatus === 'Pending').length
+      });
     } catch (error) {
       console.error('Error loading stats:', error);
     }
@@ -41,13 +48,6 @@ const AdminDashboard = () => {
       {/* Top Navbar */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-success shadow-sm" style={{ position: 'sticky', top: 0, zIndex: 1000 }}>
         <div className="container-fluid">
-          <button
-            className="btn btn-outline-light me-3"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            <i className="bi bi-list"></i>
-          </button>
-          
           <Link className="navbar-brand fw-bold" to="/admin/dashboard">
             <i className="bi bi-shop me-2"></i>
             FreshVilla Admin
@@ -86,7 +86,7 @@ const AdminDashboard = () => {
       <div className="d-flex">
         {/* Sidebar */}
         <div
-          className={`bg-light border-end ${sidebarOpen ? '' : 'd-none'}`}
+          className="bg-light border-end"
           style={{
             width: '250px',
             minHeight: 'calc(100vh - 56px)',
@@ -166,15 +166,97 @@ const AdminDashboard = () => {
 
         {/* Main Content */}
         <div className="flex-grow-1 p-4" style={{ backgroundColor: '#f8f9fa', minHeight: 'calc(100vh - 56px)' }}>
-          <Routes>
-            <Route path="/" element={<DashboardHome stats={stats} />} />
-            <Route path="/products" element={<ProductsList />} />
-            <Route path="/products/create" element={<ProductCreate />} />
-            <Route path="/products/edit/:id" element={<ProductEdit />} />
-            <Route path="/coupons" element={<CouponsList />} />
-            <Route path="/coupons/create" element={<CouponCreate />} />
-            <Route path="/orders" element={<OrdersList />} />
-          </Routes>
+          <div className="container-fluid">
+            <h2 className="mb-4">Dashboard Overview</h2>
+            
+            {/* Stats Cards */}
+            <div className="row g-3 mb-4">
+              <div className="col-md-3">
+                <div className="card border-0 shadow-sm">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <p className="text-muted mb-1">Total Orders</p>
+                        <h3 className="mb-0">{stats.totalOrders}</h3>
+                      </div>
+                      <div className="bg-primary bg-opacity-10 p-3 rounded">
+                        <i className="bi bi-cart3 fs-2 text-primary"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="col-md-3">
+                <div className="card border-0 shadow-sm">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <p className="text-muted mb-1">Revenue</p>
+                        <h3 className="mb-0">₹{stats.totalRevenue.toFixed(2)}</h3>
+                      </div>
+                      <div className="bg-success bg-opacity-10 p-3 rounded">
+                        <i className="bi bi-currency-rupee fs-2 text-success"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="col-md-3">
+                <div className="card border-0 shadow-sm">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <p className="text-muted mb-1">Products</p>
+                        <h3 className="mb-0">{stats.totalProducts}</h3>
+                      </div>
+                      <div className="bg-info bg-opacity-10 p-3 rounded">
+                        <i className="bi bi-box-seam fs-2 text-info"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="col-md-3">
+                <div className="card border-0 shadow-sm">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <div>
+                        <p className="text-muted mb-1">Pending Orders</p>
+                        <h3 className="mb-0">{stats.pendingOrders}</h3>
+                      </div>
+                      <div className="bg-warning bg-opacity-10 p-3 rounded">
+                        <i className="bi bi-clock-history fs-2 text-warning"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="card border-0 shadow-sm">
+              <div className="card-body">
+                <h5 className="card-title mb-3">Quick Actions</h5>
+                <div className="d-flex gap-2">
+                  <Link to="/admin/products/create" className="btn btn-success">
+                    <i className="bi bi-plus-circle me-2"></i>
+                    Add Product
+                  </Link>
+                  <Link to="/admin/products" className="btn btn-primary">
+                    <i className="bi bi-grid me-2"></i>
+                    Manage Products
+                  </Link>
+                  <Link to="/admin/orders" className="btn btn-info text-white">
+                    <i className="bi bi-receipt me-2"></i>
+                    View Orders
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
