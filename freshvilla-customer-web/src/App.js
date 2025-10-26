@@ -45,6 +45,7 @@ import MyAccountAddress from "./pages/Accounts/MyAccountAddress";
 import MyAccountForgetPassword from "./pages/Accounts/MyAccountForgetPassword";
 import MyAccountSignIn from "./pages/Accounts/MyAccountSignIn";
 import MyAccountSignUp from "./pages/Accounts/MyAccountSignUp";
+import PasswordReset from "./pages/Accounts/PasswordReset";
 import FAQ from "./pages/FooterElements/Faq";
 import Coupons from "./pages/FooterElements/Coupons";
 import Careers from "./pages/FooterElements/Careers";
@@ -79,6 +80,7 @@ const App = () => {
           <Route path="/MyAccountForgetPassword" element={<MyAccountForgetPassword />} />
           <Route path="/MyAccountSignIn" element={<MyAccountSignIn />} />
           <Route path="/MyAccountSignUp" element={<MyAccountSignUp />} />
+          <Route path="/reset-password" element={<PasswordReset />} />
           {/* About pages */}
           <Route path="/Blog" element={<Blog />} />
           <Route path="/BlogCategory" element={<BlogCategory />} />
