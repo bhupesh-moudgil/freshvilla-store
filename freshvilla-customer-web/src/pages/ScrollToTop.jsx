@@ -26,20 +26,7 @@ const ScrollToTop = () => {
       };
     }, []);
   
-  return (
-    <div>
-        <>
-        <div className="scroll-to-top">
-                <button
-                  onClick={scrollToTop}
-                  className={`scroll-to-top-button ${isVisible ? "show" : ""}`}
-                >
-                  ↑
-                </button>
-              </div>
-        </>
-    </div>
-  )
+  return null; // Hidden
 }
 
 export default ScrollToTop
