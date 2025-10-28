@@ -8,7 +8,7 @@ const { protect } = require('../middleware/auth');
 // @access  Private (Admin)
 router.get('/', protect, async (req, res) => {
   try {
-    const coupons = await Coupon.find().sort({ createdAt: -1 });
+    const coupons = await Coupon.findAll({ order: [['createdAt', 'DESC']] });
     
     res.json({
       success: true,
@@ -104,11 +104,7 @@ router.post('/', protect, async (req, res) => {
 // @access  Private (Admin)
 router.put('/:id', protect, async (req, res) => {
   try {
-    const coupon = await Coupon.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const coupon = await Coupon.findByPk(req.params.id);
 
     if (!coupon) {
       return res.status(404).json({
@@ -116,6 +112,8 @@ router.put('/:id', protect, async (req, res) => {
         message: 'Coupon not found'
       });
     }
+
+    await coupon.update(req.body);
 
     res.json({
       success: true,
@@ -135,7 +133,7 @@ router.put('/:id', protect, async (req, res) => {
 // @access  Private (Admin)
 router.delete('/:id', protect, async (req, res) => {
   try {
-    const coupon = await Coupon.findById(req.params.id);
+    const coupon = await Coupon.findByPk(req.params.id);
 
     if (!coupon) {
       return res.status(404).json({
@@ -144,7 +142,7 @@ router.delete('/:id', protect, async (req, res) => {
       });
     }
 
-    await coupon.deleteOne();
+    await coupon.destroy();
 
     res.json({
       success: true,
@@ -163,7 +161,7 @@ router.delete('/:id', protect, async (req, res) => {
 // @access  Private (Admin)
 router.patch('/:id/toggle', protect, async (req, res) => {
   try {
-    const coupon = await Coupon.findById(req.params.id);
+    const coupon = await Coupon.findByPk(req.params.id);
 
     if (!coupon) {
       return res.status(404).json({
@@ -172,8 +170,7 @@ router.patch('/:id/toggle', protect, async (req, res) => {
       });
     }
 
-    coupon.isActive = !coupon.isActive;
-    await coupon.save();
+    await coupon.update({ isActive: !coupon.isActive });
 
     res.json({
       success: true,

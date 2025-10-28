@@ -12,25 +12,24 @@ router.get('/', protect, async (req, res) => {
   try {
     const { status, page = 1, limit = 20 } = req.query;
 
-    let query = {};
-    if (status) query.orderStatus = status;
+    let where = {};
+    if (status) where.orderStatus = status;
 
-    const skip = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-    const orders = await Order.find(query)
-      .populate('items.product', 'name image')
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(Number(limit));
-
-    const total = await Order.countDocuments(query);
+    const { count, rows: orders } = await Order.findAndCountAll({
+      where,
+      order: [['createdAt', 'DESC']],
+      offset,
+      limit: Number(limit)
+    });
 
     res.json({
       success: true,
       count: orders.length,
-      total,
+      total: count,
       page: Number(page),
-      pages: Math.ceil(total / limit),
+      pages: Math.ceil(count / limit),
       data: orders
     });
   } catch (error) {
@@ -46,8 +45,7 @@ router.get('/', protect, async (req, res) => {
 // @access  Private (Admin)
 router.get('/:id', protect, async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id)
-      .populate('items.product', 'name image category');
+    const order = await Order.findByPk(req.params.id);
 
     if (!order) {
       return res.status(404).json({
@@ -175,14 +173,7 @@ router.patch('/:id/status', protect, async (req, res) => {
   try {
     const { orderStatus, cancelReason } = req.body;
 
-    const updateData = { orderStatus };
-    if (cancelReason) updateData.cancelReason = cancelReason;
-
-    const order = await Order.findByIdAndUpdate(
-      req.params.id,
-      updateData,
-      { new: true }
-    );
+    const order = await Order.findByPk(req.params.id);
 
     if (!order) {
       return res.status(404).json({
@@ -190,6 +181,11 @@ router.patch('/:id/status', protect, async (req, res) => {
         message: 'Order not found'
       });
     }
+
+    const updateData = { orderStatus };
+    if (cancelReason) updateData.cancelReason = cancelReason;
+
+    await order.update(updateData);
 
     res.json({
       success: true,
@@ -209,16 +205,16 @@ router.patch('/:id/status', protect, async (req, res) => {
 // @access  Private (Admin)
 router.get('/stats/overview', protect, async (req, res) => {
   try {
-    const totalOrders = await Order.countDocuments();
-    const pendingOrders = await Order.countDocuments({ orderStatus: 'Pending' });
-    const completedOrders = await Order.countDocuments({ orderStatus: 'Delivered' });
+    const { sequelize } = require('../config/database');
+    const totalOrders = await Order.count();
+    const pendingOrders = await Order.count({ where: { orderStatus: 'Pending' } });
+    const completedOrders = await Order.count({ where: { orderStatus: 'Delivered' } });
     
-    const revenueResult = await Order.aggregate([
-      { $match: { orderStatus: 'Delivered' } },
-      { $group: { _id: null, total: { $sum: '$total' } } }
-    ]);
+    const [revenueResult] = await sequelize.query(
+      `SELECT SUM(total) as revenue FROM orders WHERE "orderStatus" = 'Delivered'`
+    );
     
-    const totalRevenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
+    const totalRevenue = revenueResult[0]?.revenue || 0;
 
     res.json({
       success: true,
@@ -226,7 +222,7 @@ router.get('/stats/overview', protect, async (req, res) => {
         totalOrders,
         pendingOrders,
         completedOrders,
-        totalRevenue
+        totalRevenue: parseFloat(totalRevenue)
       }
     });
   } catch (error) {

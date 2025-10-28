@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/Product');
 const { protect } = require('../middleware/auth');
+const { Op } = require('sequelize');
 
 // @route   GET /api/products
 // @desc    Get all products (with filters)
@@ -20,46 +21,48 @@ router.get('/', async (req, res) => {
       limit = 50
     } = req.query;
 
-    // Build query
-    let query = { isActive: true };
+    // Build where clause
+    let where = { isActive: true };
 
-    if (category) query.category = category;
-    if (featured) query.featured = featured === 'true';
-    if (inStock) query.inStock = inStock === 'true';
+    if (category) where.category = category;
+    if (featured) where.featured = featured === 'true';
+    if (inStock) where.inStock = inStock === 'true';
+    
     if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice) query.price.$gte = Number(minPrice);
-      if (maxPrice) query.price.$lte = Number(maxPrice);
+      where.price = {};
+      if (minPrice) where.price[Op.gte] = Number(minPrice);
+      if (maxPrice) where.price[Op.lte] = Number(maxPrice);
     }
+    
     if (search) {
-      query.$text = { $search: search };
+      where.name = { [Op.iLike]: `%${search}%` };
     }
 
     // Sort options
-    let sortOption = {};
-    if (sort === 'price_asc') sortOption.price = 1;
-    else if (sort === 'price_desc') sortOption.price = -1;
-    else if (sort === 'name') sortOption.name = 1;
-    else if (sort === 'newest') sortOption.createdAt = -1;
-    else sortOption.featured = -1; // Featured first by default
+    let order = [];
+    if (sort === 'price_asc') order.push(['price', 'ASC']);
+    else if (sort === 'price_desc') order.push(['price', 'DESC']);
+    else if (sort === 'name') order.push(['name', 'ASC']);
+    else if (sort === 'newest') order.push(['createdAt', 'DESC']);
+    else order.push(['featured', 'DESC']); // Featured first by default
 
     // Pagination
-    const skip = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
     // Execute query
-    const products = await Product.find(query)
-      .sort(sortOption)
-      .skip(skip)
-      .limit(Number(limit));
-
-    const total = await Product.countDocuments(query);
+    const { count, rows: products } = await Product.findAndCountAll({
+      where,
+      order,
+      offset,
+      limit: Number(limit)
+    });
 
     res.json({
       success: true,
       count: products.length,
-      total,
+      total: count,
       page: Number(page),
-      pages: Math.ceil(total / limit),
+      pages: Math.ceil(count / limit),
       data: products
     });
   } catch (error) {
@@ -75,7 +78,7 @@ router.get('/', async (req, res) => {
 // @access  Public
 router.get('/:id', async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findByPk(req.params.id);
 
     if (!product) {
       return res.status(404).json({
@@ -121,7 +124,7 @@ router.post('/', protect, async (req, res) => {
 // @access  Private (Admin only)
 router.put('/:id', protect, async (req, res) => {
   try {
-    let product = await Product.findById(req.params.id);
+    let product = await Product.findByPk(req.params.id);
 
     if (!product) {
       return res.status(404).json({
@@ -130,14 +133,7 @@ router.put('/:id', protect, async (req, res) => {
       });
     }
 
-    product = await Product.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      {
-        new: true,
-        runValidators: true
-      }
-    );
+    await product.update(req.body);
 
     res.json({
       success: true,
@@ -157,7 +153,7 @@ router.put('/:id', protect, async (req, res) => {
 // @access  Private (Admin only)
 router.delete('/:id', protect, async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findByPk(req.params.id);
 
     if (!product) {
       return res.status(404).json({
@@ -166,7 +162,7 @@ router.delete('/:id', protect, async (req, res) => {
       });
     }
 
-    await product.deleteOne();
+    await product.destroy();
 
     res.json({
       success: true,
@@ -187,11 +183,7 @@ router.patch('/:id/stock', protect, async (req, res) => {
   try {
     const { stock, inStock } = req.body;
 
-    const product = await Product.findByIdAndUpdate(
-      req.params.id,
-      { stock, inStock },
-      { new: true, runValidators: true }
-    );
+    const product = await Product.findByPk(req.params.id);
 
     if (!product) {
       return res.status(404).json({
@@ -199,6 +191,8 @@ router.patch('/:id/stock', protect, async (req, res) => {
         message: 'Product not found'
       });
     }
+
+    await product.update({ stock, inStock });
 
     res.json({
       success: true,
@@ -218,7 +212,11 @@ router.patch('/:id/stock', protect, async (req, res) => {
 // @access  Public
 router.get('/categories/list', async (req, res) => {
   try {
-    const categories = await Product.distinct('category');
+    const { sequelize } = require('../config/database');
+    const [results] = await sequelize.query(
+      'SELECT DISTINCT category FROM products WHERE "isActive" = true'
+    );
+    const categories = results.map(r => r.category);
     
     res.json({
       success: true,
