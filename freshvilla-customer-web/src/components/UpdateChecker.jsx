@@ -124,12 +124,30 @@ const UpdateChecker = () => {
       document.body.appendChild(notification);
       
       // Update Now button
-      document.getElementById('update-now-btn').addEventListener('click', () => {
+      document.getElementById('update-now-btn').addEventListener('click', async () => {
+        // Show loading state
+        const btn = document.getElementById('update-now-btn');
+        btn.textContent = 'Updating...';
+        btn.disabled = true;
+        
         // Clear all caches and force reload
         if ('caches' in window) {
-          caches.keys().then(names => {
-            names.forEach(name => caches.delete(name));
-          });
+          try {
+            const names = await caches.keys();
+            await Promise.all(names.map(name => caches.delete(name)));
+          } catch (e) {
+            console.log('Cache clear error:', e);
+          }
+        }
+        
+        // Unregister service workers
+        if ('serviceWorker' in navigator) {
+          try {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(registrations.map(reg => reg.unregister()));
+          } catch (e) {
+            console.log('SW unregister error:', e);
+          }
         }
         
         // Clear localStorage except auth data
@@ -137,18 +155,19 @@ const UpdateChecker = () => {
           admin_token: localStorage.getItem('admin_token'),
           admin_user: localStorage.getItem('admin_user'),
           customer_token: localStorage.getItem('customer_token'),
-          customer_user: localStorage.getItem('customer_user')
+          customer_user: localStorage.getItem('customer_user'),
+          cart: localStorage.getItem('cart')
         };
         
         localStorage.clear();
         
-        // Restore auth data
+        // Restore auth data and cart
         Object.entries(authData).forEach(([key, value]) => {
           if (value) localStorage.setItem(key, value);
         });
         
-        // Hard reload
-        window.location.reload(true);
+        // Force hard reload with cache bypass
+        window.location.href = window.location.href.split('?')[0] + '?t=' + Date.now();
       });
       
       // Later button
