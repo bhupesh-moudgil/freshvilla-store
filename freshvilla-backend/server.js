@@ -120,14 +120,36 @@ app.use(sanitizeInput);
 // HPP package removed due to Express compatibility issues
 // Protection handled by sanitizeInput middleware
 
-// Routes
+// Routes - Authentication & User Management
 app.use('/api/auth', require('./src/routes/auth'));
 app.use('/api/customer/auth', require('./src/routes/customerAuth'));
 app.use('/api/password-reset', require('./src/routes/passwordReset'));
+
+// Admin Management
+app.use('/api/admin/store-users', require('./src/routes/adminStoreUsers'));
+
+// Store User Management
+app.use('/api/store-users', require('./src/routes/storeUsers'));
+
+// Store ERP System
+app.use('/api/store-erp', require('./src/routes/storeERP'));
+
+// Service Areas & Delivery
+app.use('/api/service-areas', require('./src/routes/serviceAreas'));
+
+// Products & Orders
 app.use('/api/settings', require('./src/routes/settings'));
 app.use('/api/products', require('./src/routes/products'));
 app.use('/api/coupons', require('./src/routes/coupons'));
 app.use('/api/orders', require('./src/routes/orders'));
+
+// Order Printing
+app.use('/api/orders', require('./src/routes/orderPrinting'));
+
+// Banners
+app.use('/api/banners', require('./src/routes/banners'));
+
+// Utilities
 app.use('/api/seed', require('./src/routes/seed'));
 app.use('/api/upload', require('./src/routes/upload'));
 
