@@ -143,6 +143,22 @@ app.use('/api/cities', require('./src/routes/cities'));
 // Stores Management
 app.use('/api/stores', require('./src/routes/stores'));
 
+// Warehouses Management
+app.use('/api/warehouses', require('./src/routes/warehouses'));
+
+// Loyalty Program
+app.use('/api/loyalty', require('./src/routes/loyalty'));
+
+// Internal Operations
+app.use('/api/internal-transfers', require('./src/routes/internalTransfers'));
+app.use('/api/internal-invoices', require('./src/routes/internalInvoices'));
+
+// GST Management
+app.use('/api/gst', require('./src/routes/gst'));
+
+// Credit Notes
+app.use('/api/credit-notes', require('./src/routes/creditNotes'));
+
 // Service Areas & Delivery
 app.use('/api/service-areas', require('./src/routes/serviceAreas'));
 

@@ -150,6 +150,37 @@ const AdminDashboard = () => {
                 </Link>
               </li>
             </ul>
+
+            <h6 className="text-muted text-uppercase small mb-3 mt-4">
+              <i className="bi bi-building me-2"></i>
+              Store Management
+            </h6>
+            <ul className="nav flex-column">
+              <li className="nav-item">
+                <Link className="nav-link text-dark" to="/admin/store-erp">
+                  <i className="bi bi-bar-chart me-2"></i>
+                  Store ERP
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link text-dark" to="/admin/service-areas">
+                  <i className="bi bi-geo-alt me-2"></i>
+                  Service Areas
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link text-dark" to="/admin/order-printing">
+                  <i className="bi bi-printer me-2"></i>
+                  Order Printing
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link text-dark" to="/admin/store-users">
+                  <i className="bi bi-people me-2"></i>
+                  Store Users
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
 

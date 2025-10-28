@@ -1,0 +1,58 @@
+.store-financials {
+  padding: 2rem;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.page-title {
+  margin-bottom: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.quick-filters {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.section-title {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+}
+
+.profit-summary {
+  text-align: center;
+  padding: 2rem;
+  background: #f8f9fa;
+  border-radius: 12px;
+}
+
+.profit-summary h2 {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.summary-stat {
+  padding: 1rem;
+}
+
+.summary-stat h4 {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.summary-stat p {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
+}

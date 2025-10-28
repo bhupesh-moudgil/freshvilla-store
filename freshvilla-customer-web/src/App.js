@@ -21,6 +21,8 @@ import ProductCreate from './pages/Admin/Products/ProductCreate';
 import CouponsList from './pages/Admin/Coupons/CouponsList';
 import CouponCreate from './pages/Admin/Coupons/CouponCreate';
 import OrdersList from './pages/Admin/Orders/OrdersList';
+import ServiceAreasList from './pages/Admin/ServiceAreas/ServiceAreasList';
+import StoreDashboard from './pages/StoreDashboard';
 import AdminLayout from './components/AdminLayout';
 // pages
 import Home from "./pages/Home";
@@ -108,6 +110,8 @@ const App = () => {
           <Route path="/admin/coupons/create" element={<ProtectedRoute><AdminLayout><CouponCreate /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/coupons/edit/:id" element={<ProtectedRoute><AdminLayout><CouponCreate /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/orders" element={<ProtectedRoute><AdminLayout><OrdersList /></AdminLayout></ProtectedRoute>} />
+          <Route path="/admin/service-areas" element={<ProtectedRoute><ServiceAreasList /></ProtectedRoute>} />
+          <Route path="/admin/store-erp" element={<ProtectedRoute><AdminLayout><StoreDashboard storeId="1" /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/settings" element={<AdminSettings />} />
           {/* Catch-all 404 route - must be last */}
           <Route path="*" element={<NotFound />} />

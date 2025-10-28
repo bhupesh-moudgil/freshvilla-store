@@ -82,6 +82,14 @@ const connectDB = async () => {
       await sequelize.authenticate();
       console.log(`✅ ${currentConfig.name} Connected Successfully\n`);
       
+      // Setup model associations
+      try {
+        const { setupAssociations } = require('../models/associations');
+        setupAssociations();
+      } catch (err) {
+        console.log('⚠️  Associations not set up yet:', err.message);
+      }
+      
       // Sync models (creates tables if they don't exist)
       await sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
       console.log('📊 Database synced\n');

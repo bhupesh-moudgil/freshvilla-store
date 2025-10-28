@@ -12,6 +12,32 @@ const Order = sequelize.define('Order', {
     unique: true,
     allowNull: false
   },
+  
+  // Foreign Keys
+  customerId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'customers',
+      key: 'id',
+    },
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+    comment: 'Link to customer account',
+  },
+  storeId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'stores',
+      key: 'id',
+    },
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+    comment: 'Store fulfilling this order',
+  },
+  
+  // Customer details (denormalized for history)
   customerName: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -41,6 +67,33 @@ const Order = sequelize.define('Order', {
       notEmpty: { msg: 'Delivery address is required' }
     }
   },
+  
+  // Delivery Location (for querying and analytics)
+  deliveryCity: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
+  deliveryCityCode: {
+    type: DataTypes.STRING(10),
+    allowNull: true,
+  },
+  deliveryDistrict: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
+  deliveryState: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
+  deliveryStateCode: {
+    type: DataTypes.STRING(10),
+    allowNull: true,
+  },
+  deliveryPincode: {
+    type: DataTypes.STRING(10),
+    allowNull: true,
+  },
+  
   items: {
     type: DataTypes.JSONB,
     allowNull: false,

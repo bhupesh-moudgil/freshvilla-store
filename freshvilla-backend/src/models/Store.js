@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+const { sequelize } = require('../config/database');
 
 const Store = sequelize.define('Store', {
   id: {
@@ -133,6 +133,51 @@ const Store = sequelize.define('Store', {
     type: DataTypes.UUID,
     allowNull: true,
     comment: 'Reference to Admin/User who owns this store',
+  },
+  
+  // Store Type Classification
+  storeType: {
+    type: DataTypes.ENUM('brand', 'integrated'),
+    defaultValue: 'brand',
+    allowNull: false,
+    comment: 'brand = FreshVilla owned, integrated = 3rd party partnership',
+  },
+  
+  // For Integrated Stores (3rd Party)
+  partnerName: {
+    type: DataTypes.STRING(200),
+    allowNull: true,
+    comment: '3rd party partner/owner name',
+  },
+  partnerContact: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    comment: 'Partner contact person',
+  },
+  partnerEmail: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    validate: {
+      isEmail: true,
+    },
+  },
+  partnerPhone: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+  },
+  partnershipDate: {
+    type: DataTypes.DATEONLY,
+    allowNull: true,
+    comment: 'Date when partnership started',
+  },
+  partnershipStatus: {
+    type: DataTypes.ENUM('active', 'inactive', 'terminated'),
+    defaultValue: 'active',
+  },
+  commissionOverride: {
+    type: DataTypes.DECIMAL(5, 2),
+    allowNull: true,
+    comment: 'Override commission for this integrated store',
   },
 }, {
   tableName: 'stores',

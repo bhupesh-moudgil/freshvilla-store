@@ -146,7 +146,7 @@ class ShopifyAdapter extends BasePlatformAdapter {
       images: shopifyProduct.images?.map(img => img.src) || [],
       status: shopifyProduct.status === 'active',
       tags: shopifyProduct.tags?.split(',').map(t => t.trim()) || [],
-      vendor: shopifyProduct.vendor,
+      distributor: shopifyProduct.distributor,
     };
   }
 
@@ -154,7 +154,7 @@ class ShopifyAdapter extends BasePlatformAdapter {
     return {
       title: productData.name,
       body_html: productData.description,
-      vendor: productData.vendor || 'FreshVilla',
+      distributor: productData.distributor || 'FreshVilla',
       product_type: productData.category,
       tags: productData.tags?.join(',') || '',
       variants: [{

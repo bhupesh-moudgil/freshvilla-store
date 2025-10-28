@@ -64,6 +64,55 @@ exports.restrictToSuperAdmin = (req, res, next) => {
   next();
 };
 
+// Role-based authorization middleware
+// Usage: authorize('super-admin'), authorize('admin', 'distributor'), etc.
+exports.authorize = (...roles) => {
+  return (req, res, next) => {
+    // Check if user is authenticated
+    if (!req.admin && !req.user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Not authorized to access this route'
+      });
+    }
+
+    // Check if super admin (always has access)
+    if (req.isSuperAdmin) {
+      return next();
+    }
+
+    // Get user's role from request
+    const userRole = req.admin?.role || req.user?.role || 'customer';
+
+    // Check if user's role is in allowed roles
+    if (!roles.includes(userRole) && !roles.includes('super-admin')) {
+      return res.status(403).json({
+        success: false,
+        message: `Access denied. Required roles: ${roles.join(', ')}`
+      });
+    }
+
+    next();
+  };
+};
+
+// Admin only middleware (alias for restrictToSuperAdmin)
+exports.adminOnly = (req, res, next) => {
+  if (!req.admin) {
+    return res.status(401).json({
+      success: false,
+      message: 'Not authorized. Admin access required.'
+    });
+  }
+  if (!req.isSuperAdmin) {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied. Super admin privileges required.'
+    });
+  }
+  next();
+};
+
 // Generate JWT Token
 exports.generateToken = (id, storeId = null) => {
   const payload = { id };

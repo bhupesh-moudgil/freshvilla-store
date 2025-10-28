@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
+const { sequelize } = require('../config/database');
 
 // Store Financial Transactions
 const StoreTransaction = sequelize.define('StoreTransaction', {

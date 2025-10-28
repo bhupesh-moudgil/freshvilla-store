@@ -6,15 +6,23 @@ import Swal from 'sweetalert2';
 const ProductsList = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(100); // Show 100 items per page
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [currentPage]);
 
   const loadProducts = async () => {
     try {
-      const response = await productsAPI.getAll();
+      // Request all products without active filter by setting limit high
+      const response = await productsAPI.getAll({ 
+        page: currentPage, 
+        limit: itemsPerPage 
+      });
       setProducts(response.data.data || []);
+      setTotalProducts(response.data.total || 0);
     } catch (error) {
       Swal.fire('Error', 'Failed to load products', 'error');
     } finally {
@@ -98,6 +106,36 @@ const ProductsList = () => {
               </tbody>
             </table>
           </div>
+          
+          {/* Pagination */}
+          {totalProducts > itemsPerPage && (
+            <div className="d-flex justify-content-between align-items-center mt-3">
+              <div className="text-muted">
+                Showing {products.length} of {totalProducts} products
+              </div>
+              <nav>
+                <ul className="pagination mb-0">
+                  <li className={`page-item ${currentPage === 1 ? 'disabled' : ''}`}>
+                    <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                      Previous
+                    </button>
+                  </li>
+                  {[...Array(Math.ceil(totalProducts / itemsPerPage))].map((_, i) => (
+                    <li key={i} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                      <button className="page-link" onClick={() => setCurrentPage(i + 1)}>
+                        {i + 1}
+                      </button>
+                    </li>
+                  ))}
+                  <li className={`page-item ${currentPage === Math.ceil(totalProducts / itemsPerPage) ? 'disabled' : ''}`}>
+                    <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+                      Next
+                    </button>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          )}
         </div>
       </div>
     </div>

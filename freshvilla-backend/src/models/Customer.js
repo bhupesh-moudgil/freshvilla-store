@@ -43,6 +43,58 @@ const Customer = sequelize.define('Customer', {
     type: DataTypes.JSONB,
     defaultValue: []
   },
+  
+  // Primary Location (extracted from addresses for querying)
+  city: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    comment: 'Primary city for filtering and service area matching',
+  },
+  cityCode: {
+    type: DataTypes.STRING(10),
+    allowNull: true,
+    comment: 'City code e.g., DEL, MUM, BLR',
+  },
+  district: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
+  state: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+  },
+  stateCode: {
+    type: DataTypes.STRING(10),
+    allowNull: true,
+    comment: 'State code e.g., DL, MH, KA',
+  },
+  pincode: {
+    type: DataTypes.STRING(10),
+    allowNull: true,
+  },
+  
+  // Store Preference
+  preferredStoreId: {
+    type: DataTypes.UUID,
+    allowNull: true,
+    references: {
+      model: 'stores',
+      key: 'id',
+    },
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+    comment: 'Customer\'s preferred/favorite store',
+  },
+  lastOrderCity: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    comment: 'City of last order placed',
+  },
+  lastOrderDate: {
+    type: DataTypes.DATE,
+    allowNull: true,
+  },
+  
   isActive: {
     type: DataTypes.BOOLEAN,
     defaultValue: true

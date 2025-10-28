@@ -1,3 +1,11 @@
+// 404 Not Found handler
+const notFound = (req, res, next) => {
+  const error = new Error(`Not Found - ${req.originalUrl}`);
+  res.status(404);
+  next(error);
+};
+
+// Global error handler
 const errorHandler = (err, req, res, next) => {
   let error = { ...err };
   error.message = err.message;
@@ -24,10 +32,24 @@ const errorHandler = (err, req, res, next) => {
     error = { message, statusCode: 400 };
   }
 
-  res.status(error.statusCode || 500).json({
+  // Sequelize validation errors
+  if (err.name === 'SequelizeValidationError') {
+    const message = err.errors.map(e => e.message).join(', ');
+    error = { message, statusCode: 400 };
+  }
+
+  // Sequelize unique constraint errors
+  if (err.name === 'SequelizeUniqueConstraintError') {
+    const field = err.errors[0]?.path || 'field';
+    const message = `${field} already exists`;
+    error = { message, statusCode: 400 };
+  }
+
+  res.status(error.statusCode || res.statusCode || 500).json({
     success: false,
-    message: error.message || 'Server Error'
+    message: error.message || 'Server Error',
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 };
 
-module.exports = errorHandler;
+module.exports = { errorHandler, notFound };

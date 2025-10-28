@@ -79,6 +79,29 @@ const Product = sequelize.define('Product', {
     type: DataTypes.STRING,
     defaultValue: '1 pc'
   },
+  // GST & Tax Information
+  hsnCode: {
+    type: DataTypes.STRING(20),
+    allowNull: true,
+    comment: 'HSN/SAC code for GST compliance'
+  },
+  gstRate: {
+    type: DataTypes.DECIMAL(5, 2),
+    defaultValue: 0,
+    validate: {
+      isIn: {
+        args: [[0, 5, 12, 18, 28]],
+        msg: 'GST rate must be 0, 5, 12, 18, or 28'
+      }
+    },
+    comment: 'GST tax rate in percentage'
+  },
+  sku: {
+    type: DataTypes.STRING(50),
+    allowNull: true,
+    unique: true,
+    comment: 'Stock Keeping Unit'
+  },
   rating: {
     type: DataTypes.DECIMAL(2, 1),
     defaultValue: 0,

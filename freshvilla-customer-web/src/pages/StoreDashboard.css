@@ -1,0 +1,190 @@
+.store-dashboard {
+  padding: 2rem;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.dashboard-title {
+  margin-bottom: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+/* Metric Cards */
+.metric-card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s;
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.metric-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.metric-card h6 {
+  color: #7f8c8d;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.metric-card h3 {
+  color: #2c3e50;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Stats Row */
+.stat {
+  text-align: center;
+  padding: 1rem;
+}
+
+.stat-label {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.stat h4 {
+  color: #2c3e50;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Period Selector */
+.period-selector {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.period-selector button {
+  padding: 0.375rem 1rem;
+  border: 1px solid #dee2e6;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.period-selector button:hover {
+  background: #f8f9fa;
+}
+
+.period-selector button.active {
+  background: #3bb77e;
+  color: white;
+  border-color: #3bb77e;
+}
+
+/* Inventory Alerts */
+.inventory-alerts .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.alert-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.alert-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.alert-item:last-child {
+  border-bottom: none;
+}
+
+.product-thumb {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 1rem;
+}
+
+.product-info strong {
+  display: block;
+  color: #2c3e50;
+  margin-bottom: 0.25rem;
+}
+
+.stock-warning {
+  font-size: 0.875rem;
+  color: #e74c3c;
+  margin: 0;
+  font-weight: 600;
+}
+
+/* Recent Transactions */
+.recent-transactions .table {
+  margin-bottom: 0;
+}
+
+.recent-transactions .table th {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #7f8c8d;
+  border-top: none;
+}
+
+.recent-transactions .table td {
+  vertical-align: middle;
+  font-size: 0.875rem;
+}
+
+/* Loading */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.25rem;
+  color: #7f8c8d;
+}
+
+/* Card Headers */
+.card-header {
+  background: white;
+  border-bottom: 2px solid #f0f0f0;
+  padding: 1rem 1.25rem;
+}
+
+.card-header h5 {
+  margin: 0;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .store-dashboard {
+    padding: 1rem;
+  }
+
+  .metric-card {
+    margin-bottom: 1rem;
+  }
+
+  .stat {
+    padding: 0.5rem;
+  }
+}

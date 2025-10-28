@@ -89,4 +89,53 @@ export const ordersAPI = {
   requestOTP: (data) => api.post('/orders/request-otp', data),
 };
 
+// Cities API
+export const citiesAPI = {
+  getAll: () => api.get('/cities'),
+  getStates: () => api.get('/cities/states'),
+  getDistricts: (stateCode) => api.get(`/cities/districts/${stateCode}`),
+  search: (query) => api.get('/cities/search', { params: { q: query } }),
+};
+
+// Stores API
+export const storesAPI = {
+  getAll: (params) => api.get('/stores', { params }),
+  getById: (id) => api.get(`/stores/${id}`),
+  getByUrl: (storeUrl) => api.get(`/stores/url/${storeUrl}`),
+  getByState: (stateCode) => api.get(`/stores/by-state/${stateCode}`),
+  getByCity: (cityCode) => api.get(`/stores/by-city/${cityCode}`),
+  create: (data) => api.post('/stores', data),
+  update: (id, data) => api.put(`/stores/${id}`, data),
+  delete: (id) => api.delete(`/stores/${id}`),
+};
+
+// Master ERP API (Super Admin Only)
+export const masterERPAPI = {
+  getDashboard: () => api.get('/master-erp/dashboard'),
+  getSalesAnalytics: (params) => api.get('/master-erp/sales-analytics', { params }),
+  getStores: (params) => api.get('/master-erp/stores', { params }),
+  getStoreComparison: (storeIds) => api.get('/master-erp/store-comparison', { params: { storeIds } }),
+  getRevenueByCategory: (params) => api.get('/master-erp/revenue-by-category', { params }),
+};
+
+// Service Areas API
+export const serviceAreasAPI = {
+  getAll: () => api.get('/service-areas'),
+  getById: (id) => api.get(`/service-areas/${id}`),
+  create: (data) => api.post('/service-areas', data),
+  update: (id, data) => api.put(`/service-areas/${id}`, data),
+  delete: (id) => api.delete(`/service-areas/${id}`),
+  toggle: (id) => api.patch(`/service-areas/${id}/toggle`),
+  checkAvailability: (params) => api.get('/service-areas/check-availability', { params }),
+};
+
+// Store Users API
+export const storeUsersAPI = {
+  getAll: (storeId) => api.get(`/store-users/${storeId}/users`),
+  getRoles: () => api.get('/store-users/roles'),
+  invite: (storeId, data) => api.post(`/store-users/${storeId}/invite`, data),
+  update: (storeId, userId, data) => api.put(`/store-users/${storeId}/users/${userId}`, data),
+  remove: (storeId, userId) => api.delete(`/store-users/${storeId}/users/${userId}`),
+};
+
 export default api;
