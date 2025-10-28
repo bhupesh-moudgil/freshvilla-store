@@ -8,7 +8,6 @@ import attaricedal from "../images/atta-rice-dal.png";
 import petcare from "../images/pet-care.png";
 import cleaningessentials from "../images/cleaning-essentials.png";
 import babycare from "../images/baby-care.png";
-import chickenmeatfish from "../images/chicken-meat-fish.png";
 import colddrinksjuices from "../images/cold-drinks-juices.png";
 import teacoffeedrinks from "../images/tea-coffee-drinks.png";
 import instantfood from "../images/instant-food.png";
@@ -33,7 +32,6 @@ import refresh from "../images/refresh-cw.svg";
 import product1 from "../images/category-baby-care.jpg";
 import product2 from "../images/category-atta-rice-dal.jpg";
 import product3 from "../images/category-bakery-biscuits.jpg";
-import product4 from "../images/category-chicken-meat-fish.jpg";
 import product5 from "../images/category-cleaning-essentials.jpg";
 import product6 from "../images/category-dairy-bread-eggs.jpg";
 import product7 from "../images/category-instant-food.jpg";
@@ -653,29 +651,6 @@ const Home = () => {
                               <h5 className="fs-6 mb-0">
                                 <Link to="#" className="text-inherit">
                                   Cold Drinks &amp; Juices
-                                </Link>
-                              </h5>
-                            </div>
-                          </div>
-                        </Zoom>
-                      </div>
-                      {/* col */}
-                      <div className="col-lg-2 col-md-4 col-6 fade-zoom">
-                        <Zoom>
-                          <div className="text-center mb-10">
-                            {/* img */}
-                            <Link to="#">
-                              <img
-                                src={chickenmeatfish}
-                                alt="chicken-meat-fish"
-                                className="card-image rounded-circle"
-                              />
-                            </Link>
-                            {/* text */}
-                            <div className="mt-4">
-                              <h5 className="fs-6 mb-0">
-                                <Link to="#" className="text-inherit">
-                                  Chicken, Meat &amp; Fish
                                 </Link>
                               </h5>
                             </div>
@@ -1661,17 +1636,6 @@ const Home = () => {
     <Link to="#" className="text-decoration-none text-inherit">
         <div className="card card-product mb-4">
           <div className="card-body text-center py-8">
-            <img src={product4} alt="Grocery Ecommerce Template" className="mb-3" style={{paddingLeft:'40px'}}/>
-            <div>Chicken, Meat &amp; Fish</div>
-          </div>
-        </div>
-     </Link></div>
-  </div>
-  <div className="images swiper-slide p-4">
-    <div className="item"> 
-    <Link to="#" className="text-decoration-none text-inherit">
-        <div className="card card-product mb-4">
-          <div className="card-body text-center py-8">
             <img src={product5} alt="Grocery Ecommerce Template" className="mb-3" style={{paddingLeft:'40px'}}/>
             <div>Cleaning Essentials</div>
           </div>
@@ -1726,19 +1690,6 @@ const Home = () => {
                       />
                        <h6 class="card-title">
                        <div>Bakery &amp; Biscuits</div>
-                      </h6>
-                    </div>
-                  </div>
-                  <div className="m-1">
-                    <div className="partner-list">
-                      <img
-                        src={product4}
-                        style={{ objectFit: "cover" }}
-                        className="img-fluid"
-                        alt="product"
-                      />
-                       <h6 class="card-title">
-                       <div>Chicken, Meat &amp; Fish</div>
                       </h6>
                     </div>
                   </div>

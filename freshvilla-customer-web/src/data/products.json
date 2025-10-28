@@ -45,20 +45,6 @@
       "featured": true
     },
     {
-      "id": 4,
-      "name": "Fresh Chicken Breast",
-      "category": "Chicken, Meat & Fish",
-      "price": 250,
-      "originalPrice": 300,
-      "discount": 17,
-      "image": "category-chicken-meat-fish.jpg",
-      "rating": 4.6,
-      "reviews": 187,
-      "unit": "500g",
-      "inStock": true,
-      "featured": true
-    },
-    {
       "id": 5,
       "name": "Vim Dishwash Bar",
       "category": "Cleaning Essentials",
