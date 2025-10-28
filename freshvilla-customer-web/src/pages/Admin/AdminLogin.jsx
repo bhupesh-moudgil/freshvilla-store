@@ -16,11 +16,15 @@ const AdminLogin = () => {
     try {
       setError('');
       setLoading(true);
+      console.log('Attempting login with:', email);
       await login(email, password);
+      console.log('Login successful, navigating to dashboard');
       navigate('/admin/dashboard');
     } catch (err) {
-      setError('Failed to login. Check your credentials.');
-      console.error(err);
+      console.error('Login error:', err);
+      console.error('Error details:', err.response?.data);
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to login. Check your credentials.';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
