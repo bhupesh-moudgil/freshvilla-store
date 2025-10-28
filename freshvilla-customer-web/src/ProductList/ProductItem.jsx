@@ -1,10 +1,43 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ProductCard from '../Component/ProductCard';
-import productsData from '../data/products.json';
+import { productsAPI } from '../services/api';
 
 const ProductItem = () => {
-  // Get featured products only
-  const featuredProducts = productsData.products.filter(p => p.featured).slice(0, 10);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const loadProducts = async () => {
+    try {
+      const response = await productsAPI.getAll({ featured: true, limit: 10 });
+      setFeaturedProducts(response.data.data || []);
+    } catch (error) {
+      console.error('Error loading products:', error);
+      // Fallback to empty array if API fails
+      setFeaturedProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <section className="my-lg-14 my-8">
+        <div className="container text-center">
+          <div className="spinner-border text-success" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (featuredProducts.length === 0) {
+    return null; // Don't show section if no products
+  }
 
   return (
     <div>

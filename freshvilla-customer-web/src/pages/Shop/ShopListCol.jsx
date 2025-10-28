@@ -4,7 +4,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 import assortment from "../../images/assortment-citrus-fruits.png";
 import { MagnifyingGlass } from "react-loader-spinner";
 import ProductCard from '../../Component/ProductCard';
-import productsData from '../../data/products.json';
+import { productsAPI } from '../../services/api';
 
 const dropdownData = [
   {
@@ -69,11 +69,25 @@ const dropdownData = [
 
 const ShopListCol = () => {
   const [loaderStatus, setLoaderStatus] = useState(true);
+  const [products, setProducts] = useState([]);
+
   useEffect(() => {
-    setTimeout(() => {
-      setLoaderStatus(false);
-    }, 1000);
+    loadProducts();
   }, []);
+
+  const loadProducts = async () => {
+    try {
+      const response = await productsAPI.getAll();
+      setProducts(response.data.data || []);
+    } catch (error) {
+      console.error('Error loading products:', error);
+      setProducts([]);
+    } finally {
+      setTimeout(() => {
+        setLoaderStatus(false);
+      }, 500);
+    }
+  };
 
   function Dropdown() {
     const [openDropdowns, setOpenDropdowns] = useState([]);
@@ -358,7 +372,7 @@ const ShopListCol = () => {
                         <div>
                           <p className="mb-3 mb-md-0">
                             {" "}
-                            <span className="text-dark">{productsData.products.length} </span> Products
+                            <span className="text-dark">{products.length} </span> Products
                             found{" "}
                           </p>
                         </div>
@@ -406,9 +420,15 @@ const ShopListCol = () => {
                         </div>
                       </div>
                       <div className="row g-4 row-cols-xl-3 row-cols-lg-3 row-cols-2 row-cols-md-2 mt-2">
-                        {productsData.products.map((product) => (
-                          <ProductCard key={product.id} product={product} />
-                        ))}
+                        {products.length > 0 ? (
+                          products.map((product) => (
+                            <ProductCard key={product.id} product={product} />
+                          ))
+                        ) : (
+                          <div className="col-12 text-center py-5">
+                            <p>No products found. Add products from admin panel.</p>
+                          </div>
+                        )}
                       </div>
                       <div className="row mt-8">
                         <div className="col">
