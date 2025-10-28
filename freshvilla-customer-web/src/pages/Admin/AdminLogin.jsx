@@ -51,7 +51,7 @@ const AdminLogin = () => {
                     <input
                       type="email"
                       className="form-control form-control-lg"
-                      placeholder="admin@freshvilla.in"
+                      placeholder="Enter your email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -89,14 +89,6 @@ const AdminLogin = () => {
                   </button>
                 </form>
 
-                <div className="mt-4 p-3 bg-light rounded">
-                  <small className="text-muted">
-                    <i className="bi bi-info-circle me-2"></i>
-                    <strong>Demo Credentials:</strong><br/>
-                    Email: admin@freshvilla.in<br/>
-                    Password: Admin@123
-                  </small>
-                </div>
               </div>
             </div>
 
