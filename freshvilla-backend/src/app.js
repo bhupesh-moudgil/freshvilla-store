@@ -18,6 +18,9 @@ const { sequelize } = require('./config/database');
 // Create Express app
 const app = express();
 
+// Trust proxy - Required for Render, Heroku, AWS ELB, etc.
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 
@@ -61,8 +64,11 @@ sequelize.authenticate()
   .then(() => console.log('✅ Database connection verified'))
   .catch(err => console.error('❌ Database connection error:', err.message));
 
-// API routes
+// API routes with /api/v1 prefix
 app.use(`/api/${process.env.API_VERSION || 'v1'}`, routes);
+
+// Legacy /api routes (without version) for backwards compatibility
+app.use('/api', routes);
 
 // Root endpoint
 app.get('/', (req, res) => {
