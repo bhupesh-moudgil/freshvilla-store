@@ -41,6 +41,8 @@ import product10 from "../images/category-tea-coffee-drinks.jpg";
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import ProductItem from "../ProductList/ProductItem";
+import ProductCard from "../Component/ProductCard";
+import { productsAPI } from '../services/api';
 import Slider from "react-slick";
 // import "slick-carousel/slick/slick.css";
 // import "slick-carousel/slick/slick-theme.css";
@@ -51,6 +53,7 @@ import { MagnifyingGlass } from "react-loader-spinner";
 import FAQ from "./FooterElements/Faq";
 const Home = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [featuredProducts, setFeaturedProducts] = useState([]);
 
   const toggleVisibility = () => {
     if (window.pageYOffset > 300) {
@@ -73,6 +76,20 @@ const Home = () => {
       window.removeEventListener("scroll", toggleVisibility);
     };
   }, []);
+
+  useEffect(() => {
+    loadFeaturedProducts();
+  }, []);
+
+  const loadFeaturedProducts = async () => {
+    try {
+      const response = await productsAPI.getAll({ featured: true, limit: 6 });
+      setFeaturedProducts(response.data.data || []);
+    } catch (error) {
+      console.error('Error loading featured products:', error);
+      setFeaturedProducts([]);
+    }
+  };
 
   const settings1 = {
     dots: true,
@@ -975,7 +992,7 @@ const Home = () => {
                           <p className="text-white">
                             Get the best deal before close.
                           </p>
-                          <Link to="#!" className="btn btn-primary">
+                          <Link to="/Shop" className="btn btn-primary">
                             Shop Now{" "}
                             <i className="feather-icon icon-arrow-right ms-1" />
                           </Link>
@@ -984,464 +1001,21 @@ const Home = () => {
                     </div>
                     <div className="col-md-9 ">
                       <div className="image-itemss">
+                        {featuredProducts.length > 0 ? (
                         <Slider {...settings1}>
-                          <div className="images swiper-slide px-4 ">
-                            <div className="col ">
-                              <div className="card card-product">
-                                <div className="card-body">
-                                  <div className="text-center  position-relative ">
-                                    {" "}
-                                    <Link to="#!">
-                                      <img
-                                        src={product11}
-                                        alt="Grocery Ecommerce Template"
-                                        className="mb-3 img-fluid"
-                                      />
-                                    </Link>
-                                    <div className="card-product-action">
-                                      <Link
-                                        to="#!"
-                                        className="btn-action"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#quickViewModal"
-                                      >
-                                        <i
-                                          className="bi bi-eye"
-                                          data-bs-toggle="tooltip"
-                                          data-bs-html="true"
-                                          title="Quick View"
-                                        />
-                                      </Link>
-                                      <Link
-                                        to="#!"
-                                        className="btn-action"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-html="true"
-                                        title="Wishlist"
-                                      >
-                                        <i className="bi bi-heart" />
-                                      </Link>
-                                      <Link
-                                        to="#!"
-                                        className="btn-action"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-html="true"
-                                        title="Compare"
-                                      >
-                                        <i className="bi bi-arrow-left-right" />
-                                      </Link>
-                                    </div>
-                                  </div>
-                                  <div className="text-small mb-1">
-                                    <Link
-                                      to="#!"
-                                      className="text-decoration-none text-muted"
-                                    >
-                                      <small>Fruits &amp; Vegetables</small>
-                                    </Link>
-                                  </div>
-                                  <h2 className="fs-6">
-                                    <Link
-                                      to="#!"
-                                      className="text-inherit text-decoration-none"
-                                    >
-                                      Golden Pineapple
-                                    </Link>
-                                  </h2>
-                                  <div className="d-flex justify-content-between align-items-center mt-3">
-                                    <div>
-                                      <span className="text-dark">₹13</span>{" "}
-                                      <span className="text-decoration-line-through text-muted">
-                                        ₹18
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <small className="text-warning">
-                                        {" "}
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-half" />
-                                      </small>
-                                      <span>
-                                        <small>4.5</small>
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="d-grid mt-2">
-                                    <Link to="#!" className="btn btn-primary ">
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width={16}
-                                        height={16}
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth={2}
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="feather feather-plus"
-                                      >
-                                        <line x1={12} y1={5} x2={12} y2={19} />
-                                        <line x1={5} y1={12} x2={19} y2={12} />
-                                      </svg>{" "}
-                                      Add to cart{" "}
-                                    </Link>
-                                  </div>
-                                  <div className="d-flex justify-content-start text-center mt-3">
-                                    <div
-                                      className="deals-countdown w-100"
-                                      data-countdown="2022/11/11 00:00:00"
-                                    />
-                                  </div>
-                                </div>
+                          {featuredProducts.map((product) => (
+                            <div className="images swiper-slide px-4" key={product.id}>
+                              <div className="col">
+                                <ProductCard product={product} />
                               </div>
                             </div>
-                          </div>
-                          <div className="images swiper-slide px-4">
-                            <div className="col">
-                              <div className="card card-product">
-                                <div className="card-body">
-                                  <div className="text-center  position-relative ">
-                                    {" "}
-                                    <Link to="#!">
-                                      <img
-                                        src={product12}
-                                        alt="Grocery Ecommerce Template"
-                                        className="mb-3 img-fluid"
-                                      />
-                                    </Link>
-                                    <div className="card-product-action">
-                                      <Link
-                                        to="#!"
-                                        className="btn-action"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#quickViewModal"
-                                      >
-                                        <i
-                                          className="bi bi-eye"
-                                          data-bs-toggle="tooltip"
-                                          data-bs-html="true"
-                                          title="Quick View"
-                                        />
-                                      </Link>
-                                      <Link
-                                        to="#!"
-                                        className="btn-action"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-html="true"
-                                        title="Wishlist"
-                                      >
-                                        <i className="bi bi-heart" />
-                                      </Link>
-                                      <Link
-                                        to="#!"
-                                        className="btn-action"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-html="true"
-                                        title="Compare"
-                                      >
-                                        <i className="bi bi-arrow-left-right" />
-                                      </Link>
-                                    </div>
-                                  </div>
-                                  <div className="text-small mb-1">
-                                    <Link
-                                      to="#!"
-                                      className="text-decoration-none text-muted"
-                                    >
-                                      <small>Fruits &amp; Vegetables</small>
-                                    </Link>
-                                  </div>
-                                  <h2 className="fs-6">
-                                    <Link
-                                      to="#!"
-                                      className="text-inherit text-decoration-none"
-                                    >
-                                      Golden Pineapple
-                                    </Link>
-                                  </h2>
-                                  <div className="d-flex justify-content-between align-items-center mt-3">
-                                    <div>
-                                      <span className="text-dark">₹13</span>{" "}
-                                      <span className="text-decoration-line-through text-muted">
-                                        ₹18
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <small className="text-warning">
-                                        {" "}
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-half" />
-                                      </small>
-                                      <span>
-                                        <small>4.5</small>
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="d-grid mt-2">
-                                    <Link to="#!" className="btn btn-primary ">
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width={16}
-                                        height={16}
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth={2}
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="feather feather-plus"
-                                      >
-                                        <line x1={12} y1={5} x2={12} y2={19} />
-                                        <line x1={5} y1={12} x2={19} y2={12} />
-                                      </svg>{" "}
-                                      Add to cart{" "}
-                                    </Link>
-                                  </div>
-                                  <div className="d-flex justify-content-start text-center mt-3">
-                                    <div
-                                      className="deals-countdown w-100"
-                                      data-countdown="2022/11/11 00:00:00"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="images swiper-slide px-4">
-                            <div className="col">
-                              <div className="card card-product">
-                                <div className="card-body">
-                                  <div className="text-center  position-relative ">
-                                    {" "}
-                                    <Link to="#!">
-                                      <img
-                                        src={product13}
-                                        alt="Grocery Ecommerce Template"
-                                        className="mb-3 img-fluid"
-                                      />
-                                    </Link>
-                                    <div className="card-product-action">
-                                      <Link
-                                        to="#!"
-                                        className="btn-action"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#quickViewModal"
-                                      >
-                                        <i
-                                          className="bi bi-eye"
-                                          data-bs-toggle="tooltip"
-                                          data-bs-html="true"
-                                          title="Quick View"
-                                        />
-                                      </Link>
-                                      <Link
-                                        to="#!"
-                                        className="btn-action"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-html="true"
-                                        title="Wishlist"
-                                      >
-                                        <i className="bi bi-heart" />
-                                      </Link>
-                                      <Link
-                                        to="#!"
-                                        className="btn-action"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-html="true"
-                                        title="Compare"
-                                      >
-                                        <i className="bi bi-arrow-left-right" />
-                                      </Link>
-                                    </div>
-                                  </div>
-                                  <div className="text-small mb-1">
-                                    <Link
-                                      to="#!"
-                                      className="text-decoration-none text-muted"
-                                    >
-                                      <small>Fruits &amp; Vegetables</small>
-                                    </Link>
-                                  </div>
-                                  <h2 className="fs-6">
-                                    <Link
-                                      to="#!"
-                                      className="text-inherit text-decoration-none"
-                                    >
-                                      Golden Pineapple
-                                    </Link>
-                                  </h2>
-                                  <div className="d-flex justify-content-between align-items-center mt-3">
-                                    <div>
-                                      <span className="text-dark">₹13</span>{" "}
-                                      <span className="text-decoration-line-through text-muted">
-                                        ₹18
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <small className="text-warning">
-                                        {" "}
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-half" />
-                                      </small>
-                                      <span>
-                                        <small>4.5</small>
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="d-grid mt-2">
-                                    <Link to="#!" className="btn btn-primary ">
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width={16}
-                                        height={16}
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth={2}
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="feather feather-plus"
-                                      >
-                                        <line x1={12} y1={5} x2={12} y2={19} />
-                                        <line x1={5} y1={12} x2={19} y2={12} />
-                                      </svg>{" "}
-                                      Add to cart{" "}
-                                    </Link>
-                                  </div>
-                                  <div className="d-flex justify-content-start text-center mt-3">
-                                    <div
-                                      className="deals-countdown w-100"
-                                      data-countdown="2022/11/11 00:00:00"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div className="images swiper-slide px-4">
-                            <div className="col">
-                              <div className="card card-product">
-                                <div className="card-body">
-                                  <div className="text-center  position-relative ">
-                                    {" "}
-                                    <Link to="#!">
-                                      <img
-                                        src={product13}
-                                        alt="Grocery Ecommerce Template"
-                                        className="mb-3 img-fluid"
-                                      />
-                                    </Link>
-                                    <div className="card-product-action">
-                                      <Link
-                                        to="#!"
-                                        className="btn-action"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#quickViewModal"
-                                      >
-                                        <i
-                                          className="bi bi-eye"
-                                          data-bs-toggle="tooltip"
-                                          data-bs-html="true"
-                                          title="Quick View"
-                                        />
-                                      </Link>
-                                      <Link
-                                        to="#!"
-                                        className="btn-action"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-html="true"
-                                        title="Wishlist"
-                                      >
-                                        <i className="bi bi-heart" />
-                                      </Link>
-                                      <Link
-                                        to="#!"
-                                        className="btn-action"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-html="true"
-                                        title="Compare"
-                                      >
-                                        <i className="bi bi-arrow-left-right" />
-                                      </Link>
-                                    </div>
-                                  </div>
-                                  <div className="text-small mb-1">
-                                    <Link
-                                      to="#!"
-                                      className="text-decoration-none text-muted"
-                                    >
-                                      <small>Fruits &amp; Vegetables</small>
-                                    </Link>
-                                  </div>
-                                  <h2 className="fs-6">
-                                    <Link
-                                      to="#!"
-                                      className="text-inherit text-decoration-none"
-                                    >
-                                      Golden Pineapple
-                                    </Link>
-                                  </h2>
-                                  <div className="d-flex justify-content-between align-items-center mt-3">
-                                    <div>
-                                      <span className="text-dark">₹13</span>{" "}
-                                      <span className="text-decoration-line-through text-muted">
-                                        ₹18
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <small className="text-warning">
-                                        {" "}
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-fill" />
-                                        <i className="bi bi-star-half" />
-                                      </small>
-                                      <span>
-                                        <small>4.5</small>
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <div className="d-grid mt-2">
-                                    <Link to="#!" className="btn btn-primary ">
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width={16}
-                                        height={16}
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth={2}
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        className="feather feather-plus"
-                                      >
-                                        <line x1={12} y1={5} x2={12} y2={19} />
-                                        <line x1={5} y1={12} x2={19} y2={12} />
-                                      </svg>{" "}
-                                      Add to cart{" "}
-                                    </Link>
-                                  </div>
-                                  <div className="d-flex justify-content-start text-center mt-3">
-                                    <div
-                                      className="deals-countdown w-100"
-                                      data-countdown="2022/11/11 00:00:00"
-                                    />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
+                          ))}
                         </Slider>
+                        ) : (
+                          <div className="text-center py-5">
+                            <p>No featured products available</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
