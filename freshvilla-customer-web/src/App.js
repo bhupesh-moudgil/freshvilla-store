@@ -21,6 +21,7 @@ import ProductCreate from './pages/Admin/Products/ProductCreate';
 import CouponsList from './pages/Admin/Coupons/CouponsList';
 import CouponCreate from './pages/Admin/Coupons/CouponCreate';
 import OrdersList from './pages/Admin/Orders/OrdersList';
+import AdminLayout from './components/AdminLayout';
 // pages
 import Home from "./pages/Home";
 // About pages
@@ -100,13 +101,13 @@ const App = () => {
           {/* Admin */}
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-          <Route path="/admin/products" element={<ProtectedRoute><ProductsList /></ProtectedRoute>} />
-          <Route path="/admin/products/create" element={<ProtectedRoute><ProductCreate /></ProtectedRoute>} />
-          <Route path="/admin/products/edit/:id" element={<ProtectedRoute><ProductCreate /></ProtectedRoute>} />
-          <Route path="/admin/coupons" element={<ProtectedRoute><CouponsList /></ProtectedRoute>} />
-          <Route path="/admin/coupons/create" element={<ProtectedRoute><CouponCreate /></ProtectedRoute>} />
-          <Route path="/admin/coupons/edit/:id" element={<ProtectedRoute><CouponCreate /></ProtectedRoute>} />
-          <Route path="/admin/orders" element={<ProtectedRoute><OrdersList /></ProtectedRoute>} />
+          <Route path="/admin/products" element={<ProtectedRoute><AdminLayout><ProductsList /></AdminLayout></ProtectedRoute>} />
+          <Route path="/admin/products/create" element={<ProtectedRoute><AdminLayout><ProductCreate /></AdminLayout></ProtectedRoute>} />
+          <Route path="/admin/products/edit/:id" element={<ProtectedRoute><AdminLayout><ProductCreate /></AdminLayout></ProtectedRoute>} />
+          <Route path="/admin/coupons" element={<ProtectedRoute><AdminLayout><CouponsList /></AdminLayout></ProtectedRoute>} />
+          <Route path="/admin/coupons/create" element={<ProtectedRoute><AdminLayout><CouponCreate /></AdminLayout></ProtectedRoute>} />
+          <Route path="/admin/coupons/edit/:id" element={<ProtectedRoute><AdminLayout><CouponCreate /></AdminLayout></ProtectedRoute>} />
+          <Route path="/admin/orders" element={<ProtectedRoute><AdminLayout><OrdersList /></AdminLayout></ProtectedRoute>} />
           <Route path="/admin/settings" element={<AdminSettings />} />
           {/* Catch-all 404 route - must be last */}
           <Route path="*" element={<NotFound />} />
