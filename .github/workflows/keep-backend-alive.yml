@@ -1,0 +1,32 @@
+name: Keep Backend Alive
+
+on:
+  schedule:
+    # Run every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch:  # Allow manual trigger from Actions tab
+
+jobs:
+  ping-backend:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Ping Backend Health Check
+        run: |
+          echo "Pinging backend at $(date)"
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://freshvilla-backend.onrender.com/health || echo "000")
+          echo "Response code: $response"
+          
+          if [ "$response" = "200" ] || [ "$response" = "000" ]; then
+            echo "✓ Backend is alive or starting up"
+            exit 0
+          else
+            echo "⚠ Unexpected response code: $response"
+            exit 0
+          fi
+      
+      - name: Ping Alternative Endpoint
+        if: always()
+        run: |
+          echo "Pinging root endpoint"
+          curl -s https://freshvilla-backend.onrender.com/ || echo "Root endpoint check complete"
