@@ -17,6 +17,18 @@ const Store = sequelize.define('Store', {
     allowNull: false,
     unique: true,
   },
+  storeNumber: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: true,
+    comment: 'Unique store number e.g., 001, 002',
+  },
+  storeUrl: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: true,
+    comment: 'Store URL slug e.g., delhi-ndl-store-001',
+  },
   description: {
     type: DataTypes.TEXT,
     allowNull: true,
@@ -50,9 +62,19 @@ const Store = sequelize.define('Store', {
     type: DataTypes.STRING,
     allowNull: true,
   },
+  cityCode: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    comment: 'City/District code from indianCities.json e.g., NDL, MUM, BLR',
+  },
   state: {
     type: DataTypes.STRING,
     allowNull: true,
+  },
+  stateCode: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    comment: 'State code e.g., DL, MH, KA',
   },
   pincode: {
     type: DataTypes.STRING,

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Admin = require('../models/Admin');
+const Store = require('../models/Store');
 const { generateToken, protect } = require('../middleware/auth');
 const { validate, validations } = require('../middleware/validation');
 const rateLimit = require('express-rate-limit');
@@ -141,8 +142,25 @@ router.post('/login', authLimiter, validations.adminLogin, validate, async (req,
     admin.lastLogin = Date.now();
     await admin.save();
 
-    // Generate token
-    const token = generateToken(admin.id);
+    // Check if super admin
+    const isSuperAdmin = admin.email === 'admin@freshvilla.in';
+    
+    // Get available stores for this admin
+    let availableStores = [];
+    if (isSuperAdmin) {
+      // Super admin can access all stores
+      availableStores = await Store.findAll({
+        where: { isActive: true },
+        attributes: ['id', 'name', 'slug', 'storeNumber', 'storeUrl', 'city', 'state', 'cityCode', 'stateCode'],
+        order: [['name', 'ASC']]
+      });
+    }
+
+    // Get storeId from request body if provided
+    const { storeId } = req.body;
+    
+    // Generate token with store context
+    const token = generateToken(admin.id, storeId);
 
     res.json({
       success: true,
@@ -152,9 +170,12 @@ router.post('/login', authLimiter, validations.adminLogin, validate, async (req,
           id: admin.id,
           name: admin.name,
           email: admin.email,
-          role: admin.role
+          role: admin.role,
+          isSuperAdmin
         },
-        token
+        token,
+        selectedStoreId: storeId || null,
+        availableStores: isSuperAdmin ? availableStores : []
       }
     });
   } catch (error) {
@@ -172,9 +193,90 @@ router.get('/me', protect, async (req, res) => {
   res.json({
     success: true,
     data: {
-      admin: req.admin
+      admin: req.admin,
+      selectedStoreId: req.selectedStoreId,
+      isSuperAdmin: req.isSuperAdmin
     }
   });
+});
+
+// @route   POST /api/auth/switch-store
+// @desc    Switch store context (Super Admin only)
+// @access  Private (Super Admin)
+router.post('/switch-store', protect, async (req, res) => {
+  try {
+    // Only super admin can switch stores
+    if (!req.isSuperAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: 'Store switching is only available for super admin'
+      });
+    }
+
+    const { storeId } = req.body;
+    
+    // Verify store exists and is active
+    if (storeId) {
+      const store = await Store.findOne({
+        where: { id: storeId, isActive: true }
+      });
+      
+      if (!store) {
+        return res.status(404).json({
+          success: false,
+          message: 'Store not found or inactive'
+        });
+      }
+    }
+    
+    // Generate new token with updated store context
+    const token = generateToken(req.admin.id, storeId);
+    
+    res.json({
+      success: true,
+      message: storeId ? 'Store switched successfully' : 'Switched to master view',
+      data: {
+        token,
+        selectedStoreId: storeId || null
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// @route   GET /api/auth/stores
+// @desc    Get available stores for super admin
+// @access  Private (Super Admin)
+router.get('/stores', protect, async (req, res) => {
+  try {
+    if (!req.isSuperAdmin) {
+      return res.status(403).json({
+        success: false,
+        message: 'Only super admin can view all stores'
+      });
+    }
+
+    const stores = await Store.findAll({
+      where: { isActive: true },
+      attributes: ['id', 'name', 'slug', 'storeNumber', 'storeUrl', 'city', 'state', 'cityCode', 'stateCode', 'email', 'phone'],
+      order: [['name', 'ASC']]
+    });
+
+    res.json({
+      success: true,
+      count: stores.length,
+      data: stores
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
 });
 
 module.exports = router;

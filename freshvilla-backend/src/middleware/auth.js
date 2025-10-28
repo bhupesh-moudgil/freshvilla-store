@@ -32,6 +32,12 @@ exports.protect = async (req, res, next) => {
         });
       }
 
+      // Add store context from token if present
+      req.selectedStoreId = decoded.storeId || null;
+      
+      // Check if super admin
+      req.isSuperAdmin = req.admin.email === 'admin@freshvilla.in';
+
       next();
     } catch (error) {
       return res.status(401).json({
@@ -47,9 +53,23 @@ exports.protect = async (req, res, next) => {
   }
 };
 
+// Restrict to super admin only
+exports.restrictToSuperAdmin = (req, res, next) => {
+  if (!req.isSuperAdmin) {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied. Super admin privileges required.'
+    });
+  }
+  next();
+};
+
 // Generate JWT Token
-exports.generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE
+exports.generateToken = (id, storeId = null) => {
+  const payload = { id };
+  if (storeId) payload.storeId = storeId;
+  
+  return jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE || '30d'
   });
 };

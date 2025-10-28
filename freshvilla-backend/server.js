@@ -134,6 +134,15 @@ app.use('/api/store-users', require('./src/routes/storeUsers'));
 // Store ERP System
 app.use('/api/store-erp', require('./src/routes/storeERP'));
 
+// Master ERP (Pan-India Dashboard - Super Admin Only)
+app.use('/api/master-erp', require('./src/routes/masterERP'));
+
+// Cities & Locations
+app.use('/api/cities', require('./src/routes/cities'));
+
+// Stores Management
+app.use('/api/stores', require('./src/routes/stores'));
+
 // Service Areas & Delivery
 app.use('/api/service-areas', require('./src/routes/serviceAreas'));
 
